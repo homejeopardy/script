@@ -1,79 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Line Rehearsal Tool</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <style>
-    body {
-      background: #121212;
-      color: #f0f0f0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-    }
-
-    h1 {
-      font-weight: 300;
-      margin-bottom: 1rem;
-      color: #ffcc00;
-    }
-
-    #line {
-      font-size: 2rem;
-      margin: 2rem;
-      max-width: 800px;
-      line-height: 1.5;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    #line:hover {
-      color: #ffcc00;
-    }
-
-    .controls {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    label {
-      font-size: 0.9rem;
-    }
-
-    input[type="range"] {
-      width: 100px;
-    }
-
-    button {
-      background: #ffcc00;
-      color: #121212;
-      border: none;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background: #ffaa00;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Line Rehearsal Tool</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+  body {
+    background: #121212;
+    color: #f0f0f0;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    padding: 1rem;
+  }
+  h1 { color: #ffcc00; font-weight: 300; margin-bottom: 1rem; }
+  #line { font-size: 2rem; margin: 2rem; max-width: 800px; line-height: 1.5; cursor: pointer; transition: 0.3s; }
+  #line:hover { color: #ffcc00; }
+  .controls, .upload-section {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem;
+  }
+  input[type="range"] { width: 100px; }
+  button {
+    background: #ffcc00; color: #121212; border: none;
+    padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; border-radius: 4px; transition: 0.2s;
+  }
+  button:hover { background: #ffaa00; }
+</style>
 </head>
 <body>
 
 <h1>Line Rehearsal</h1>
-<div id="line">Click to start</div>
+
+<div class="upload-section">
+  <input type="file" id="fileInput">
+  <input type="text" id="characterName" placeholder="Your Character Name">
+  <button onclick="loadScript()">Load Script</button>
+</div>
+
+<div id="line">Upload your script to begin</div>
 
 <div class="controls">
   <button id="toggle-tts">TTS: On</button>
@@ -82,55 +52,79 @@
 </div>
 
 <script>
-  const lines = [
-    { cue: "Where have you been?", yourLine: "I've been looking for you!" },
-    { cue: "Did you hear the news?", yourLine: "No, what happened?" },
-    { cue: "It's time for the big performance.", yourLine: "Let's give it our all!" }
-    // Replace these with your actual lines
-  ];
+let lines = [];
+let currentIndex = 0;
+let showingCue = true;
+let ttsEnabled = true;
 
-  let currentIndex = 0;
-  let showingCue = true;
-  let ttsEnabled = true;
+const lineDiv = document.getElementById('line');
+const toggleBtn = document.getElementById('toggle-tts');
+const speedControl = document.getElementById('speed');
+const pitchControl = document.getElementById('pitch');
 
-  const lineDiv = document.getElementById('line');
-  const toggleBtn = document.getElementById('toggle-tts');
-  const speedControl = document.getElementById('speed');
-  const pitchControl = document.getElementById('pitch');
+function speak(text) {
+  if (!ttsEnabled) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = parseFloat(speedControl.value);
+  utter.pitch = parseFloat(pitchControl.value);
+  speechSynthesis.speak(utter);
+}
 
-  function speak(text) {
-    if (!ttsEnabled) return;
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = parseFloat(speedControl.value);
-    utter.pitch = parseFloat(pitchControl.value);
-    speechSynthesis.speak(utter);
+function showNext() {
+  if (currentIndex >= lines.length) {
+    lineDiv.textContent = "🎉 Congratulations! You're done.";
+    return;
+  }
+  const current = lines[currentIndex];
+  if (showingCue) {
+    lineDiv.textContent = current.cue;
+    speak(current.cue);
+  } else {
+    lineDiv.textContent = current.yourLine;
+    currentIndex++;
+  }
+  showingCue = !showingCue;
+}
+
+lineDiv.addEventListener('click', showNext);
+
+toggleBtn.addEventListener('click', () => {
+  ttsEnabled = !ttsEnabled;
+  toggleBtn.textContent = `TTS: ${ttsEnabled ? 'On' : 'Off'}`;
+});
+
+function loadScript() {
+  const file = document.getElementById('fileInput').files[0];
+  const character = document.getElementById('characterName').value.trim().toUpperCase();
+  if (!file || !character) {
+    alert("Please upload a script file and enter your character name.");
+    return;
   }
 
-  function showNext() {
-    if (currentIndex >= lines.length) {
-      lineDiv.textContent = "🎉 Congratulations! You're done.";
-      return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const scriptLines = text.split('\n').map(l => l.trim()).filter(l => l);
+    lines = [];
+
+    for (let i = 1; i < scriptLines.length; i++) {
+      if (scriptLines[i].startsWith(character + ':')) {
+        const cueLine = scriptLines[i - 1].replace(/^[A-Z]+:\s*/, '');
+        const yourLine = scriptLines[i].replace(character + ':', '').trim();
+        lines.push({ cue: cueLine, yourLine });
+      }
     }
 
-    const current = lines[currentIndex];
-
-    if (showingCue) {
-      lineDiv.textContent = current.cue;
-      speak(current.cue);
+    if (lines.length === 0) {
+      lineDiv.textContent = "Couldn't find any lines for that character.";
     } else {
-      lineDiv.textContent = current.yourLine;
-      currentIndex++;
+      currentIndex = 0;
+      showingCue = true;
+      lineDiv.textContent = "Click to begin!";
     }
-
-    showingCue = !showingCue;
-  }
-
-  lineDiv.addEventListener('click', showNext);
-
-  toggleBtn.addEventListener('click', () => {
-    ttsEnabled = !ttsEnabled;
-    toggleBtn.textContent = `TTS: ${ttsEnabled ? 'On' : 'Off'}`;
-  });
+  };
+  reader.readAsText(file);
+}
 </script>
 
 </body>
