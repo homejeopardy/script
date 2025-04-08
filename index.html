@@ -17,20 +17,96 @@
     height: 100vh;
     margin: 0;
     text-align: center;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+  h1 {
+    color: #ffcc00;
+    font-weight: 500;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  #line {
+    font-size: 1.8rem;
+    margin: 2rem 0;
+    max-width: 800px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: color 0.3s ease;
     padding: 1rem;
+    border-radius: 10px;
+    background-color: rgba(255, 204, 0, 0.1);
   }
-  h1 { color: #ffcc00; font-weight: 300; margin-bottom: 1rem; }
-  #line { font-size: 2rem; margin: 2rem; max-width: 800px; line-height: 1.5; cursor: pointer; transition: 0.3s; }
-  #line:hover { color: #ffcc00; }
+  #line:hover {
+    color: #ffcc00;
+    background-color: rgba(255, 204, 0, 0.2);
+  }
   .controls, .upload-section {
-    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
   }
-  input[type="range"] { width: 100px; }
+  input[type="file"], input[type="text"], input[type="range"], button {
+    font-size: 1.1rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #ffcc00;
+    background-color: #121212;
+    color: #f0f0f0;
+    outline: none;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  input[type="file"], input[type="text"] {
+    width: 250px;
+  }
+  input[type="range"] {
+    width: 150px;
+  }
   button {
-    background: #ffcc00; color: #121212; border: none;
-    padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; border-radius: 4px; transition: 0.2s;
+    background: #ffcc00;
+    color: #121212;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s, transform 0.3s ease-in-out;
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
   }
-  button:hover { background: #ffaa00; }
+  button:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+  }
+  button:active {
+    transform: scale(0.98);
+  }
+  input[type="file"]:hover, input[type="text"]:hover, input[type="range"]:hover {
+    background-color: rgba(255, 204, 0, 0.1);
+  }
+  .upload-section, .controls {
+    gap: 2rem;
+  }
+  .controls label {
+    color: #ffcc00;
+    font-weight: bold;
+  }
+  .upload-section input, .controls input {
+    background-color: rgba(255, 204, 0, 0.1);
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    color: #f0f0f0;
+  }
+  .upload-section input[type="file"] {
+    width: 180px;
+  }
+  .upload-section input[type="text"] {
+    width: 250px;
+  }
+  .upload-section button {
+    background-color: #ffaa00;
+  }
 </style>
 </head>
 <body>
