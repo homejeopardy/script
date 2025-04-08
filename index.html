@@ -107,11 +107,19 @@ function loadScript() {
     const scriptLines = text.split('\n').map(l => l.trim()).filter(l => l);
     lines = [];
 
-    for (let i = 1; i < scriptLines.length; i++) {
-      if (scriptLines[i].startsWith(character + ':')) {
-        const cueLine = scriptLines[i - 1].replace(/^[A-Z]+:\s*/, '');
-        const yourLine = scriptLines[i].replace(character + ':', '').trim();
-        lines.push({ cue: cueLine, yourLine });
+    let currentCue = '';
+    for (let i = 0; i < scriptLines.length; i++) {
+      const line = scriptLines[i];
+      const nextLine = scriptLines[i + 1];
+
+      // Check if the line belongs to the character
+      if (line.toUpperCase().startsWith(character + ':')) {
+        if (currentCue && nextLine && !nextLine.toUpperCase().startsWith(character + ':')) {
+          lines.push({ cue: currentCue, yourLine: line.replace(character + ':', '').trim() });
+          currentCue = '';
+        }
+      } else {
+        currentCue = line; // Store the cue line
       }
     }
 
