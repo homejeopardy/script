@@ -1,258 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Line Rehearsal</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>
-  :root {
-    --bg: #121212;
-    --text: #eee;
-    --accent: #2980b9;
-    --line-bg: #0077cc;
-    --progress-bg: #444;
-    --progress-fill: #2980b9;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Line Rehearsal Tool</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      background: #121212;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
 
-  body.light {
-    --bg: #f4f4f4;
-    --text: #222;
-    --accent: #d35400;
-    --line-bg: #f39c12;
-    --progress-bg: #ccc;
-    --progress-fill: #d35400;
-  }
+    h1 {
+      font-weight: 300;
+      margin-bottom: 1rem;
+      color: #ffcc00;
+    }
 
-  body {
-    margin: 0;
-    font-family: 'Helvetica Neue', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-    transition: background 0.4s, color 0.4s;
-  }
+    #line {
+      font-size: 2rem;
+      margin: 2rem;
+      max-width: 800px;
+      line-height: 1.5;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-  h1 {
-    margin-bottom: 20px;
-    font-weight: 300;
-    letter-spacing: 1px;
-  }
+    #line:hover {
+      color: #ffcc00;
+    }
 
-  #controls {
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-  input, button, label {
-    font-size: 1rem;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-  }
+    label {
+      font-size: 0.9rem;
+    }
 
-  input[type="text"], input[type="file"] {
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--progress-bg);
-  }
+    input[type="range"] {
+      width: 100px;
+    }
 
-  button {
-    background: var(--accent);
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
+    button {
+      background: #ffcc00;
+      color: #121212;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
 
-  button:hover {
-    opacity: 0.8;
-  }
-
-  label {
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  #lineDisplay {
-    font-size: 2rem;
-    background: var(--bg);
-    border: 2px solid var(--progress-bg);
-    border-radius: 10px;
-    padding: 50px 30px;
-    max-width: 800px;
-    width: 90%;
-    text-align: center;
-    transition: all 0.3s;
-    cursor: pointer;
-    user-select: none;
-    min-height: 150px;
-  }
-
-  .your-line {
-    background: var(--line-bg);
-    color: white;
-    border-color: var(--line-bg);
-  }
-
-  #progressContainer {
-    width: 90%;
-    max-width: 800px;
-    height: 10px;
-    background: var(--progress-bg);
-    border-radius: 5px;
-    margin-top: 15px;
-    overflow: hidden;
-  }
-
-  #progressBar {
-    width: 0%;
-    height: 100%;
-    background: var(--progress-fill);
-    transition: width 0.5s;
-  }
-
-  #themeToggle {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: var(--progress-bg);
-    color: var(--text);
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-
-  #loading {
-    font-size: 1.5rem;
-    animation: pulse 1s infinite alternate;
-  }
-
-  @keyframes pulse {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
-  }
-</style>
+    button:hover {
+      background: #ffaa00;
+    }
+  </style>
 </head>
-
 <body>
 
-<div id="themeToggle" onclick="toggleTheme()">Toggle Theme</div>
-
 <h1>Line Rehearsal</h1>
+<div id="line">Click to start</div>
 
-<div id="controls">
-  <input type="file" id="scriptFile">
-  <input type="text" id="characterName" placeholder="Your character's name">
-  <button onclick="processScript()">Load Script</button>
+<div class="controls">
+  <button id="toggle-tts">TTS: On</button>
+  <label>Speed <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1"></label>
+  <label>Pitch <input type="range" id="pitch" min="0" max="2" step="0.1" value="1"></label>
 </div>
 
-<div id="lineDisplay">Upload a script and enter your character's name.</div>
-
-<div id="progressContainer"><div id="progressBar"></div></div>
-
 <script>
-let lines = [], index = 0, showCue = true;
-const display = document.getElementById('lineDisplay');
-const progressBar = document.getElementById('progressBar');
-const synth = window.speechSynthesis;
+  const lines = [
+    { cue: "Where have you been?", yourLine: "I've been looking for you!" },
+    { cue: "Did you hear the news?", yourLine: "No, what happened?" },
+    { cue: "It's time for the big performance.", yourLine: "Let's give it our all!" }
+    // Replace these with your actual lines
+  ];
 
-const congratsMessages = [
-  "🎭 Bravo! You nailed it!",
-  "🌟 Take a bow!",
-  "👏 Legendary performance!",
-  "✨ Lines mastered!",
-  "🔥 Broadway ready!"
-];
+  let currentIndex = 0;
+  let showingCue = true;
+  let ttsEnabled = true;
 
-function toggleTheme() {
-  document.body.classList.toggle('light');
-  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
-}
+  const lineDiv = document.getElementById('line');
+  const toggleBtn = document.getElementById('toggle-tts');
+  const speedControl = document.getElementById('speed');
+  const pitchControl = document.getElementById('pitch');
 
-window.onload = () => {
-  if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
-  if (localStorage.getItem('progress')) {
-    const saved = JSON.parse(localStorage.getItem('progress'));
-    lines = saved.lines;
-    index = saved.index;
-    showCue = saved.showCue;
-    updateDisplay();
+  function speak(text) {
+    if (!ttsEnabled) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = parseFloat(speedControl.value);
+    utter.pitch = parseFloat(pitchControl.value);
+    speechSynthesis.speak(utter);
   }
-};
 
-function processScript() {
-  const fileInput = document.getElementById('scriptFile');
-  const characterName = document.getElementById('characterName').value.trim().toUpperCase();
-  if (!fileInput.files[0] || !characterName) return alert("Please upload a file and enter your character's name.");
-
-  display.textContent = "Loading...";
-  display.id = "loading";
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    const text = e.target.result;
-    const allLines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    lines = [];
-    for (let i = 1; i < allLines.length; i++) {
-      if (allLines[i].toUpperCase().startsWith(characterName + ":")) {
-        lines.push({ cue: allLines[i-1], line: allLines[i] });
-      }
-    }
-    if (lines.length === 0) {
-      display.textContent = "No lines found.";
+  function showNext() {
+    if (currentIndex >= lines.length) {
+      lineDiv.textContent = "🎉 Congratulations! You're done.";
       return;
     }
-    index = 0;
-    showCue = true;
-    display.id = "lineDisplay";
-    updateDisplay();
-  };
-  reader.readAsText(fileInput.files[0]);
-}
 
-function updateDisplay() {
-  if (index >= lines.length) {
-    display.className = '';
-    display.textContent = congratsMessages[Math.floor(Math.random() * congratsMessages.length)];
-    progressBar.style.width = "100%";
-    localStorage.removeItem('progress');
-    return;
+    const current = lines[currentIndex];
+
+    if (showingCue) {
+      lineDiv.textContent = current.cue;
+      speak(current.cue);
+    } else {
+      lineDiv.textContent = current.yourLine;
+      currentIndex++;
+    }
+
+    showingCue = !showingCue;
   }
-  const current = lines[index];
-  if (showCue) {
-    display.textContent = current.cue;
-    display.className = '';
-    speak(current.cue);
-  } else {
-    display.textContent = current.line;
-    display.className = 'your-line';
-  }
-  progressBar.style.width = `${(index / lines.length) * 100}%`;
-  localStorage.setItem('progress', JSON.stringify({ lines, index, showCue }));
-}
 
-function speak(text) {
-  if (!synth) return;
-  synth.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  synth.speak(utter);
-}
+  lineDiv.addEventListener('click', showNext);
 
-document.body.addEventListener('click', () => {
-  if (lines.length === 0) return;
-  if (!showCue) index++;
-  showCue = !showCue;
-  updateDisplay();
-});
+  toggleBtn.addEventListener('click', () => {
+    ttsEnabled = !ttsEnabled;
+    toggleBtn.textContent = `TTS: ${ttsEnabled ? 'On' : 'Off'}`;
+  });
 </script>
 
 </body>
