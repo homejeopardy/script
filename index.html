@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Line Rehearsal</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f9f9f9;
+    }
+    #lineDisplay {
+      font-size: 2rem;
+      background: white;
+      border: 2px solid #ccc;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: auto;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .your-line {
+      color: #fff;
+      background-color: #0077cc;
+      border-color: #005fa3;
+    }
+    input, button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Line Rehearsal Tool</h1>
+
+<input type="file" id="scriptFile">
+<input type="text" id="characterName" placeholder="Your character's name">
+<label>
+  <input type="checkbox" id="randomizeLines"> Randomize Lines
+</label>
+<br>
+<button onclick="processScript()">Load Script</button>
+
+<div id="lineDisplay">Upload a script and enter your character's name.</div>
+
+<script>
+  let lines = [];
+  let index = 0;
+  let showCue = true;
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function processScript() {
+    const fileInput = document.getElementById('scriptFile');
+    const characterName = document.getElementById('characterName').value.trim().toUpperCase();
+    const randomize = document.getElementById('randomizeLines').checked;
+
+    if (!fileInput.files[0] || !characterName) {
+      alert("Please upload a file and enter your character's name.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const text = event.target.result;
+      const allLines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+      lines = [];
+      for (let i = 1; i < allLines.length; i++) {
+        if (allLines[i].toUpperCase().startsWith(characterName + ":")) {
+          const cue = allLines[i - 1];
+          const line = allLines[i];
+          lines.push({ cue, line });
+        }
+      }
+
+      if (lines.length === 0) {
+        document.getElementById('lineDisplay').textContent = "No lines found for that character.";
+      } else {
+        if (randomize) shuffleArray(lines);
+        index = 0;
+        showCue = true;
+        document.getElementById('lineDisplay').textContent = "Click to begin!";
+      }
+    };
+
+    reader.readAsText(fileInput.files[0]);
+  }
+
+  document.body.addEventListener('click', () => {
+    if (lines.length === 0) return;
+
+    if (index >= lines.length) {
+      document.getElementById('lineDisplay').className = '';
+      document.getElementById('lineDisplay').textContent = "🎭 You're done!";
+      return;
+    }
+
+    const current = lines[index];
+    const display = document.getElementById('lineDisplay');
+
+    if (showCue) {
+      display.textContent = current.cue;
+      display.className = ''; // Remove special styling
+    } else {
+      display.textContent = current.line;
+      display.className = 'your-line'; // Highlight your line
+    }
+
+    showCue = !showCue;
+    if (showCue) index++;
+  });
+</script>
+
+</body>
+</html>
