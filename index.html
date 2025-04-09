@@ -50,10 +50,6 @@
             margin-top: 20px;
         }
 
-        .settings-panel input[type="range"] {
-            width: 100%;
-        }
-
         .progress-bar {
             width: 100%;
             background-color: #ddd;
@@ -108,10 +104,6 @@
 
         <button id="toggle-settings">Settings</button>
         <div class="settings-panel" id="settings-panel">
-            <label for="tts-speed">TTS Speed: </label>
-            <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
-            <label for="tts-pitch">TTS Pitch: </label>
-            <input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1">
             <label for="theme-toggle">Dark Mode</label>
             <input type="checkbox" id="theme-toggle">
         </div>
@@ -129,17 +121,13 @@
         let scriptLines = [];
         let currentLineIndex = 0;
         let characterName = '';
-        let isTTSOn = false;
         let progress = 0;
-        let audio = new SpeechSynthesisUtterance();
 
+        // Event listeners
         document.getElementById('file-input').addEventListener('change', handleFileUpload);
         document.getElementById('character-name').addEventListener('input', updateCharacterName);
         document.getElementById('toggle-settings').addEventListener('click', toggleSettings);
-
         document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
-        document.getElementById('tts-speed').addEventListener('input', updateTTS);
-        document.getElementById('tts-pitch').addEventListener('input', updateTTS);
 
         function handleFileUpload(event) {
             const file = event.target.files[0];
@@ -187,15 +175,9 @@
             const previousLine = currentLineIndex > 0 ? linesForCharacter[currentLineIndex - 1].line : '';
             document.getElementById('line-display').innerHTML = `<b>${previousLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}`;
 
-            if (isTTSOn) {
-                audio.text = currentLine.line;
-                speechSynthesis.speak(audio);
-            }
-
+            // Update progress
             progress = ((currentLineIndex + 1) / linesForCharacter.length) * 100;
             document.getElementById('progress').style.width = `${progress}%`;
-
-            currentLineIndex++;
         }
 
         function toggleSettings() {
@@ -208,24 +190,11 @@
             document.body.classList.toggle('light-mode');
         }
 
-        function updateTTS() {
-            audio.rate = document.getElementById('tts-speed').value;
-            audio.pitch = document.getElementById('tts-pitch').value;
-        }
-
         document.getElementById('line-display').addEventListener('click', function () {
             if (currentLineIndex >= scriptLines.length) return;
 
-            const currentLine = scriptLines[currentLineIndex];
-            const nextLine = scriptLines[currentLineIndex + 1] ? scriptLines[currentLineIndex + 1].line : '';
-            
-            if (currentLineIndex % 2 === 0) {
-                document.getElementById('line-display').innerHTML = `<b>${nextLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}`;
-            } else {
-                document.getElementById('line-display').innerHTML = `<b>${nextLine}</b><br><i>${currentLine.character}: </i>${nextLine}`;
-            }
-
             currentLineIndex++;
+            displayNextLine();
         });
     </script>
 </body>
