@@ -101,9 +101,11 @@
     <div class="container">
         <h1>Line Rehearsal Tool</h1>
 
-        <div class="line-display" id="line-display">Please upload your script.</div>
+        <label for="character-name">Enter Your Character's Name:</label>
+        <input type="text" id="character-name" placeholder="Character Name" />
 
-        <button id="next-btn">Next Line</button>
+        <div class="line-display" id="line-display">Please enter your character name and upload your script.</div>
+
         <button id="toggle-settings">Settings</button>
         <div class="settings-panel" id="settings-panel">
             <label for="tts-speed">TTS Speed: </label>
@@ -126,17 +128,16 @@
     <script>
         let scriptLines = [];
         let currentLineIndex = 0;
+        let characterName = '';
         let isTTSOn = false;
         let progress = 0;
         let audio = new SpeechSynthesisUtterance();
 
         document.getElementById('file-input').addEventListener('change', handleFileUpload);
-
-        document.getElementById('next-btn').addEventListener('click', displayNextLine);
+        document.getElementById('character-name').addEventListener('input', updateCharacterName);
         document.getElementById('toggle-settings').addEventListener('click', toggleSettings);
 
         document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
-
         document.getElementById('tts-speed').addEventListener('input', updateTTS);
         document.getElementById('tts-pitch').addEventListener('input', updateTTS);
 
@@ -148,6 +149,13 @@
                     parseScript(e.target.result);
                 };
                 reader.readAsText(file);
+            }
+        }
+
+        function updateCharacterName(event) {
+            characterName = event.target.value.trim();
+            if (characterName) {
+                displayNextLine();
             }
         }
 
@@ -166,23 +174,24 @@
         }
 
         function displayNextLine() {
-            if (currentLineIndex >= scriptLines.length) {
-                document.getElementById('line-display').innerText = 'You have finished the script!';
+            if (!characterName || scriptLines.length === 0) return;
+
+            const linesForCharacter = scriptLines.filter(line => line.character === characterName);
+            if (linesForCharacter.length === 0) {
+                document.getElementById('line-display').innerText = 'No lines found for this character.';
                 return;
             }
 
-            const currentLine = scriptLines[currentLineIndex];
-            const previousLine = currentLineIndex > 0 ? scriptLines[currentLineIndex - 1].line : '';
-            const nextLine = scriptLines[currentLineIndex + 1] ? scriptLines[currentLineIndex + 1].line : '';
-
-            document.getElementById('line-display').innerHTML = `<b>${previousLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}<br><i>Next: ${nextLine}</i>`;
+            const currentLine = linesForCharacter[currentLineIndex];
+            const previousLine = currentLineIndex > 0 ? linesForCharacter[currentLineIndex - 1].line : '';
+            document.getElementById('line-display').innerHTML = `<b>${previousLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}`;
 
             if (isTTSOn) {
                 audio.text = currentLine.line;
                 speechSynthesis.speak(audio);
             }
 
-            progress = ((currentLineIndex + 1) / scriptLines.length) * 100;
+            progress = ((currentLineIndex + 1) / linesForCharacter.length) * 100;
             document.getElementById('progress').style.width = `${progress}%`;
 
             currentLineIndex++;
@@ -203,17 +212,20 @@
             audio.pitch = document.getElementById('tts-pitch').value;
         }
 
-        function toggleTTS() {
-            isTTSOn = !isTTSOn;
-        }
+        document.getElementById('line-display').addEventListener('click', function () {
+            if (currentLineIndex >= scriptLines.length) return;
 
-        // Initialize TTS voice settings
-        audio.onstart = function () {
-            console.log("TTS started");
-        };
-        audio.onend = function () {
-            console.log("TTS ended");
-        };
+            const currentLine = scriptLines[currentLineIndex];
+            const nextLine = scriptLines[currentLineIndex + 1] ? scriptLines[currentLineIndex + 1].line : '';
+            
+            if (currentLineIndex % 2 === 0) {
+                document.getElementById('line-display').innerHTML = `<b>${nextLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}`;
+            } else {
+                document.getElementById('line-display').innerHTML = `<b>${nextLine}</b><br><i>${currentLine.character}: </i>${nextLine}`;
+            }
+
+            currentLineIndex++;
+        });
     </script>
 </body>
 </html>
