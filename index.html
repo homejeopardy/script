@@ -155,6 +155,7 @@
         function updateCharacterName(event) {
             characterName = event.target.value.trim();
             if (characterName) {
+                currentLineIndex = 0;
                 displayNextLine();
             }
         }
