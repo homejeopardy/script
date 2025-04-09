@@ -16,7 +16,6 @@
     justify-content: center;
     min-height: 100vh;
     padding: 2rem;
-    line-height: 1.5;
   }
   h1 {
     font-size: 2.5rem;
@@ -206,41 +205,33 @@ function loadScript() {
 function parseScript(text, character) {
   const lines = [];
   const rawLines = text.split('\n').map(l => l.trim());
-
   let currentCue = '';
+  let currentSpeaker = '';
 
   for (let i = 0; i < rawLines.length; i++) {
     const line = rawLines[i];
 
-    if (!line || /^SCENE|^ACT|^FIRST MOVEMENT|^SECOND MOVEMENT|^THIRD MOVEMENT/.test(line.toUpperCase())) {
+    if (!line || /^SCENE|^ACT|^MOVEMENT/.test(line.toUpperCase())) continue;
+
+    if (/^[A-Z0-9 .\-']+$/.test(line) && line === line.toUpperCase()) {
+      currentSpeaker = line;
       continue;
     }
 
-    if (/^[A-Z \-']+$/.test(line) && line === line.toUpperCase()) {
-      const speaker = line.trim();
-
-      if (speaker === character) {
-        let yourLine = '';
-        let j = i + 1;
-
-        while (j < rawLines.length && rawLines[j] && !/^[A-Z \-']+$/.test(rawLines[j])) {
-          yourLine += rawLines[j] + ' ';
-          j++;
-        }
-
-        if (currentCue) {
-          lines.push({ cue: currentCue, yourLine: yourLine.trim() });
-        }
-        i = j - 1;
-      } else {
-        let cueLine = '';
-        let j = i + 1;
-        while (j < rawLines.length && rawLines[j] && !/^[A-Z \-']+$/.test(rawLines[j])) {
-          cueLine += rawLines[j] + ' ';
-          j++;
-        }
-        currentCue = cueLine.trim();
-        i = j - 1;
+    if (currentSpeaker === character) {
+      let yourLine = line;
+      while (i + 1 < rawLines.length && rawLines[i + 1] && !/^[A-Z0-9 .\-']+$/.test(rawLines[i + 1])) {
+        i++;
+        yourLine += ' ' + rawLines[i].trim();
+      }
+      if (currentCue) {
+        lines.push({ cue: currentCue, yourLine: yourLine.trim() });
+      }
+    } else if (currentSpeaker) {
+      currentCue = line;
+      while (i + 1 < rawLines.length && rawLines[i + 1] && !/^[A-Z0-9 .\-']+$/.test(rawLines[i + 1])) {
+        i++;
+        currentCue += ' ' + rawLines[i].trim();
       }
     }
   }
