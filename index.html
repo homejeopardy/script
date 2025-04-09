@@ -1,204 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Line Rehearsal Tool</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2214%22 font-size=%2212%22>🎭</text></svg>">
-<style>
-:root {
-  --bg: #f9f9f9;
-  --text: #222;
-  --accent: #007aff;
-  --progress: #4caf50;
-}
-.dark {
-  --bg: #121212;
-  --text: #eee;
-  --accent: #0a84ff;
-  --progress: #66bb6a;
-}
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-  transition: background 0.3s, color 0.3s;
-}
-h1 { font-weight: 600; }
-button, input[type="file"], select {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-}
-button:hover { opacity: 0.9; }
-input, select { margin: 0.5rem 0; }
-#display { 
-  margin-top: 2rem;
-  padding: 2rem;
-  border: 2px solid var(--accent);
-  border-radius: 1rem;
-  text-align: center;
-  max-width: 600px;
-  min-height: 6rem;
-  cursor: pointer;
-  user-select: none;
-}
-.progress-container {
-  width: 100%;
-  background: #ccc;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  margin: 1rem 0;
-}
-.progress-bar {
-  height: 1rem;
-  width: 0%;
-  background: var(--progress);
-  transition: width 0.3s;
-}
-.settings {
-  margin-top: 1rem;
-}
-.hidden { display: none; }
-select, input[type="range"] { width: 100%; }
-footer { margin-top: 2rem; font-size: 0.8rem; opacity: 0.7; }
-.fade-in {
-  animation: fade 1s ease-in;
-}
-@keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Line Rehearsal Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+        }
+
+        .line-display {
+            font-size: 1.2em;
+            color: #555;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #eaeaea;
+            border-radius: 5px;
+        }
+
+        .settings-panel {
+            display: none;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .settings-panel input[type="range"] {
+            width: 100%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .progress-bar span {
+            display: block;
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .dark-mode {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .light-mode {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #upload-file {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Line Rehearsal Tool</h1>
 
-<h1>🎭 Line Rehearsal Tool</h1>
+        <div class="line-display" id="line-display">Please upload your script.</div>
 
-<input type="file" id="fileInput">
-<br>
-<input type="text" id="characterInput" placeholder="Your Character Name">
-<br>
-<button onclick="start()">Start Rehearsal</button>
+        <button id="next-btn">Next Line</button>
+        <button id="toggle-settings">Settings</button>
+        <div class="settings-panel" id="settings-panel">
+            <label for="tts-speed">TTS Speed: </label>
+            <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+            <label for="tts-pitch">TTS Pitch: </label>
+            <input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1">
+            <label for="theme-toggle">Dark Mode</label>
+            <input type="checkbox" id="theme-toggle">
+        </div>
 
-<div class="progress-container">
-  <div class="progress-bar" id="progressBar"></div>
-</div>
+        <div class="progress-bar">
+            <span id="progress" style="width: 0%"></span>
+        </div>
 
-<div id="display" onclick="nextLine()" class="hidden"></div>
+        <div id="upload-file">
+            <input type="file" id="file-input" />
+        </div>
+    </div>
 
-<div class="settings">
-  <button onclick="toggleSettings()">Settings ⚙️</button>
-  <div id="settingsPanel" class="hidden">
-    <label>TTS Speed</label>
-    <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
-    <label>TTS Pitch</label>
-    <input type="range" id="pitchControl" min="0" max="2" step="0.1" value="1">
-    <label>Theme</label>
-    <select onchange="setTheme(this.value)">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-    <button onclick="toggleTTS()">
-      Toggle TTS: <span id="ttsStatus">On</span>
-    </button>
-  </div>
-</div>
+    <script>
+        let scriptLines = [];
+        let currentLineIndex = 0;
+        let isTTSOn = false;
+        let progress = 0;
+        let audio = new SpeechSynthesisUtterance();
 
-<footer>Auto-saving progress...</footer>
+        document.getElementById('file-input').addEventListener('change', handleFileUpload);
 
-<script>
-let lines = [], myLines = [], index = 0, ttsOn = true;
-const display = document.getElementById('display');
-const progressBar = document.getElementById('progressBar');
+        document.getElementById('next-btn').addEventListener('click', displayNextLine);
+        document.getElementById('toggle-settings').addEventListener('click', toggleSettings);
 
-function start() {
-  const file = document.getElementById('fileInput').files[0];
-  const character = document.getElementById('characterInput').value.trim().toUpperCase();
-  if (!file || !character) return alert('Upload script and enter your character name.');
-  
-  const reader = new FileReader();
-  reader.onload = e => {
-    lines = e.target.result.split('\n');
-    extractLines(character);
-  };
-  reader.readAsText(file);
-}
+        document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
 
-function extractLines(character) {
-  myLines = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trim() === character) {
-      let cue = findCue(i - 1);
-      let line = lines[i + 1] || '';
-      myLines.push({cue, line});
-    }
-  }
-  if (myLines.length === 0) return alert('No lines found for this character.');
-  index = 0;
-  display.classList.remove('hidden');
-  nextLine();
-}
+        document.getElementById('tts-speed').addEventListener('input', updateTTS);
+        document.getElementById('tts-pitch').addEventListener('input', updateTTS);
 
-function findCue(idx) {
-  while (idx >= 0) {
-    if (lines[idx].trim() && lines[idx] === lines[idx].toUpperCase()) return lines[idx];
-    idx--;
-  }
-  return '(Start)';
-}
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    parseScript(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        }
 
-function nextLine() {
-  if (index >= myLines.length) return finish();
-  const {cue, line} = myLines[index];
-  display.innerHTML = `<div class="fade-in"><strong>Cue:</strong> ${cue}<br><br><strong>Your Line:</strong> ${line}</div>`;
-  progressBar.style.width = ((index + 1) / myLines.length) * 100 + '%';
-  if (ttsOn) speak(cue);
-  localStorage.setItem('lineProgress', index);
-  index++;
-}
+        function parseScript(text) {
+            const lines = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+            scriptLines = [];
+            let character = '';
+            lines.forEach(line => {
+                if (line.toUpperCase() === line) {
+                    character = line; // The character name is in uppercase
+                } else {
+                    scriptLines.push({ character, line });
+                }
+            });
+            displayNextLine();
+        }
 
-function finish() {
-  const messages = ["Bravo!", "Encore!", "You crushed it!", "Legendary performance!", "Well done, superstar!"];
-  const msg = messages[Math.floor(Math.random() * messages.length)];
-  display.innerHTML = `<div class="fade-in">${msg}</div>`;
-  progressBar.style.width = '100%';
-}
+        function displayNextLine() {
+            if (currentLineIndex >= scriptLines.length) {
+                document.getElementById('line-display').innerText = 'You have finished the script!';
+                return;
+            }
 
-function speak(text) {
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = parseFloat(document.getElementById('speedControl').value);
-  utter.pitch = parseFloat(document.getElementById('pitchControl').value);
-  speechSynthesis.speak(utter);
-}
+            const currentLine = scriptLines[currentLineIndex];
+            const previousLine = currentLineIndex > 0 ? scriptLines[currentLineIndex - 1].line : '';
+            const nextLine = scriptLines[currentLineIndex + 1] ? scriptLines[currentLineIndex + 1].line : '';
 
-function toggleSettings() {
-  document.getElementById('settingsPanel').classList.toggle('hidden');
-}
+            document.getElementById('line-display').innerHTML = `<b>${previousLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}<br><i>Next: ${nextLine}</i>`;
 
-function toggleTTS() {
-  ttsOn = !ttsOn;
-  document.getElementById('ttsStatus').textContent = ttsOn ? 'On' : 'Off';
-}
+            if (isTTSOn) {
+                audio.text = currentLine.line;
+                speechSynthesis.speak(audio);
+            }
 
-function setTheme(theme) {
-  document.body.classList.toggle('dark', theme === 'dark');
-}
+            progress = ((currentLineIndex + 1) / scriptLines.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
 
-window.onload = () => {
-  const saved = localStorage.getItem('lineProgress');
-  if (saved) index = parseInt(saved);
-};
-</script>
+            currentLineIndex++;
+        }
 
+        function toggleSettings() {
+            const settingsPanel = document.getElementById('settings-panel');
+            settingsPanel.classList.toggle('hidden');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('light-mode');
+        }
+
+        function updateTTS() {
+            audio.rate = document.getElementById('tts-speed').value;
+            audio.pitch = document.getElementById('tts-pitch').value;
+        }
+
+        function toggleTTS() {
+            isTTSOn = !isTTSOn;
+        }
+
+        // Initialize TTS voice settings
+        audio.onstart = function () {
+            console.log("TTS started");
+        };
+        audio.onend = function () {
+            console.log("TTS ended");
+        };
+    </script>
 </body>
 </html>
