@@ -171,6 +171,7 @@
                 return;
             }
 
+            // Display the previous line as cue, and then the current line
             const currentLine = linesForCharacter[currentLineIndex];
             const previousLine = currentLineIndex > 0 ? linesForCharacter[currentLineIndex - 1].line : '';
             document.getElementById('line-display').innerHTML = `<b>${previousLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}`;
