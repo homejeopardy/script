@@ -1,269 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Line Rehearsal Tool</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <style>
-    /* Base Reset and Layout */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      background: #F7F7F7;
-      color: #1C1C1E;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
-      line-height: 1.5;
-    }
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 500;
-      color: #1C1C1E;
-      margin-bottom: 1rem;
-    }
-    /* Script display area */
-    #line {
-      font-size: 1.8rem;
-      padding: 1rem 1.5rem;
-      margin: 1.5rem 0;
-      max-width: 800px;
-      border-radius: 12px;
-      background-color: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: background-color 0.25s ease, box-shadow 0.25s ease;
-    }
-    #line:hover {
-      background-color: #F0F0F5;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    /* Upload Section */
-    .upload-section {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-    .upload-section input[type="file"],
-    .upload-section input[type="text"] {
-      font-size: 1rem;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #CCC;
-      background-color: #fff;
-      outline: none;
-      width: 250px;
-      transition: border-color 0.25s ease;
-    }
-    .upload-section input[type="file"]:focus,
-    .upload-section input[type="text"]:focus {
-      border-color: #007AFF;
-    }
-    .upload-section button {
-      font-size: 1rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      border: none;
-      background-color: #007AFF;
-      color: #fff;
-      cursor: pointer;
-      transition: background-color 0.25s ease, transform 0.15s ease;
-    }
-    .upload-section button:hover {
-      background-color: #005BBB;
-      transform: scale(1.02);
-    }
-    /* Settings Bar */
-    #toggleSettings {
-      background: none;
-      border: none;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #007AFF;
-      cursor: pointer;
-      outline: none;
-      transition: color 0.25s ease;
-    }
-    #toggleSettings:hover {
-      color: #005BBB;
-    }
-    #settingsBar {
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      transition: max-height 0.4s ease, padding 0.4s ease;
-      max-height: 0;
-      padding: 0 1rem;
-    }
-    #settingsBar.open {
-      max-height: 180px; /* Adjusted for content height */
-      padding: 1rem;
-    }
-    .setting-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.75rem;
-    }
-    .setting-item:last-child {
-      margin-bottom: 0;
-    }
-    .setting-item label {
-      font-size: 1rem;
-      color: #1C1C1E;
-      font-weight: 500;
-    }
-    .setting-item input[type="range"] {
-      width: 150px;
-    }
-    .setting-item button {
-      font-size: 1rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      border: none;
-      background-color: #007AFF;
-      color: #fff;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-    }
-    .setting-item button:hover {
-      background-color: #005BBB;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Line Rehearsal Tool</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #F7F7F7;
+    color: #1C1C1E;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  #line {
+    font-size: 1.8rem;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    max-width: 800px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  #line:hover {
+    background: #F0F0F5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .upload-section {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  input, button {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #CCC;
+    background: #fff;
+    outline: none;
+    transition: 0.2s;
+  }
+  input:focus {
+    border-color: #007AFF;
+  }
+  button {
+    border: none;
+    background: #007AFF;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #005BBB;
+    transform: scale(1.02);
+  }
+  #toggleSettings {
+    background: none;
+    color: #007AFF;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  #toggleSettings:hover {
+    color: #005BBB;
+  }
+  #settingsBar {
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    max-height: 0;
+    padding: 0 1rem;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    margin-bottom: 1.5rem;
+  }
+  #settingsBar.open {
+    max-height: 180px;
+    padding: 1rem;
+  }
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .setting-item label {
+    font-weight: 500;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Line Rehearsal</h1>
-  
-  <div class="upload-section">
-    <input type="file" id="fileInput">
-    <input type="text" id="characterName" placeholder="Your Character Name">
-    <button onclick="loadScript()">Load Script</button>
+<h1>Line Rehearsal</h1>
+
+<div class="upload-section">
+  <input type="file" id="fileInput">
+  <input type="text" id="characterName" placeholder="Your Character Name">
+  <button onclick="loadScript()">Load Script</button>
+</div>
+
+<button id="toggleSettings" onclick="toggleSettings()">Settings &#9660;</button>
+
+<div id="settingsBar">
+  <div class="setting-item">
+    <label>TTS:</label>
+    <button id="toggle-tts">On</button>
   </div>
-
-  <button id="toggleSettings" onclick="toggleSettings()">Settings &#9660;</button>
-  
-  <div id="settingsBar">
-    <div class="setting-item">
-      <label for="toggle-tts">TTS:</label>
-      <button id="toggle-tts">On</button>
-    </div>
-    <div class="setting-item">
-      <label for="speed">Speed</label>
-      <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
-    </div>
-    <div class="setting-item">
-      <label for="pitch">Pitch</label>
-      <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
-    </div>
+  <div class="setting-item">
+    <label>Speed</label>
+    <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
   </div>
+  <div class="setting-item">
+    <label>Pitch</label>
+    <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
+  </div>
+</div>
 
-  <div id="line">Upload your script to begin</div>
+<div id="line">Upload your script to begin</div>
 
-  <script>
-    let lines = [];
-    let currentIndex = 0;
-    let showingCue = true;
-    let ttsEnabled = true;
+<script>
+let lines = [];
+let currentIndex = 0;
+let showingCue = true;
+let ttsEnabled = true;
 
-    const lineDiv = document.getElementById('line');
-    const toggleTtsBtn = document.getElementById('toggle-tts');
-    const speedControl = document.getElementById('speed');
-    const pitchControl = document.getElementById('pitch');
-    const settingsBar = document.getElementById('settingsBar');
+const lineDiv = document.getElementById('line');
+const toggleTtsBtn = document.getElementById('toggle-tts');
+const speedControl = document.getElementById('speed');
+const pitchControl = document.getElementById('pitch');
+const settingsBar = document.getElementById('settingsBar');
 
-    function speak(text) {
-      if (!ttsEnabled) return;
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.rate = parseFloat(speedControl.value);
-      utter.pitch = parseFloat(pitchControl.value);
-      speechSynthesis.speak(utter);
+function speak(text) {
+  if (!ttsEnabled) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = parseFloat(speedControl.value);
+  utter.pitch = parseFloat(pitchControl.value);
+  speechSynthesis.speak(utter);
+}
+
+function showNext() {
+  if (currentIndex >= lines.length) {
+    lineDiv.textContent = "🎉 Congratulations! You're done.";
+    return;
+  }
+  const current = lines[currentIndex];
+  if (showingCue) {
+    lineDiv.textContent = current.cue;
+    speak(current.cue);
+  } else {
+    lineDiv.textContent = current.yourLine;
+    currentIndex++;
+  }
+  showingCue = !showingCue;
+}
+
+lineDiv.addEventListener('click', showNext);
+
+toggleTtsBtn.addEventListener('click', () => {
+  ttsEnabled = !ttsEnabled;
+  toggleTtsBtn.textContent = ttsEnabled ? 'On' : 'Off';
+});
+
+function toggleSettings() {
+  settingsBar.classList.toggle('open');
+  const toggleBtn = document.getElementById('toggleSettings');
+  toggleBtn.innerHTML = settingsBar.classList.contains('open') ? 'Settings &#9650;' : 'Settings &#9660;';
+}
+
+function loadScript() {
+  const file = document.getElementById('fileInput').files[0];
+  const character = document.getElementById('characterName').value.trim().toUpperCase();
+  if (!file || !character) {
+    alert("Please upload a script file and enter your character name.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    lines = parseScript(text, character);
+    if (lines.length === 0) {
+      lineDiv.textContent = "Couldn't find any lines for that character.";
+    } else {
+      currentIndex = 0;
+      showingCue = true;
+      lineDiv.textContent = "Click to begin!";
+    }
+  };
+  reader.readAsText(file);
+}
+
+function parseScript(text, character) {
+  const lines = [];
+  const rawLines = text.split('\n').map(l => l.trim());
+
+  let currentCue = '';
+
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+
+    if (!line || /^SCENE|^ACT|^FIRST MOVEMENT|^SECOND MOVEMENT|^THIRD MOVEMENT/.test(line.toUpperCase())) {
+      continue;
     }
 
-    function showNext() {
-      if (currentIndex >= lines.length) {
-        lineDiv.textContent = "🎉 Congratulations! You're done.";
-        return;
-      }
-      const current = lines[currentIndex];
-      if (showingCue) {
-        lineDiv.textContent = current.cue;
-        speak(current.cue);
+    if (/^[A-Z \-']+$/.test(line) && line === line.toUpperCase()) {
+      const speaker = line.trim();
+
+      if (speaker === character) {
+        let yourLine = '';
+        let j = i + 1;
+
+        while (j < rawLines.length && rawLines[j] && !/^[A-Z \-']+$/.test(rawLines[j])) {
+          yourLine += rawLines[j] + ' ';
+          j++;
+        }
+
+        if (currentCue) {
+          lines.push({ cue: currentCue, yourLine: yourLine.trim() });
+        }
+        i = j - 1;
       } else {
-        lineDiv.textContent = current.yourLine;
-        currentIndex++;
-      }
-      showingCue = !showingCue;
-    }
-
-    lineDiv.addEventListener('click', showNext);
-
-    toggleTtsBtn.addEventListener('click', () => {
-      ttsEnabled = !ttsEnabled;
-      toggleTtsBtn.textContent = ttsEnabled ? 'On' : 'Off';
-    });
-
-    function toggleSettings() {
-      settingsBar.classList.toggle('open');
-      const toggleBtn = document.getElementById('toggleSettings');
-      toggleBtn.innerHTML = settingsBar.classList.contains('open') ? 'Settings &#9650;' : 'Settings &#9660;';
-    }
-
-    function loadScript() {
-      const file = document.getElementById('fileInput').files[0];
-      const character = document.getElementById('characterName').value.trim().toUpperCase();
-      if (!file || !character) {
-        alert("Please upload a script file and enter your character name.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const text = e.target.result;
-        const scriptLines = text.split('\n').map(l => l.trim()).filter(l => l);
-        lines = [];
-
-        let currentCue = '';
-        for (let i = 0; i < scriptLines.length; i++) {
-          const line = scriptLines[i];
-          const nextLine = scriptLines[i + 1];
-
-          // Check if the line belongs to the character
-          if (line.toUpperCase().startsWith(character + ':')) {
-            if (currentCue && nextLine && !nextLine.toUpperCase().startsWith(character + ':')) {
-              lines.push({ cue: currentCue, yourLine: line.replace(character + ':', '').trim() });
-              currentCue = '';
-            }
-          } else {
-            currentCue = line;
-          }
+        let cueLine = '';
+        let j = i + 1;
+        while (j < rawLines.length && rawLines[j] && !/^[A-Z \-']+$/.test(rawLines[j])) {
+          cueLine += rawLines[j] + ' ';
+          j++;
         }
-
-        if (lines.length === 0) {
-          lineDiv.textContent = "Couldn't find any lines for that character.";
-        } else {
-          currentIndex = 0;
-          showingCue = true;
-          lineDiv.textContent = "Click to begin!";
-        }
-      };
-      reader.readAsText(file);
+        currentCue = cueLine.trim();
+        i = j - 1;
+      }
     }
-  </script>
+  }
+  return lines;
+}
+</script>
 
 </body>
 </html>
