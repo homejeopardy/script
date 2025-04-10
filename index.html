@@ -223,10 +223,10 @@
                     if (currentLine.startsWith(characterName)) {
                         const characterLine = currentLine.trim();
                         lineDisplay.textContent = characterLine; // Show your line
+                        isCueLineShown = false; // Reset for next interaction
+                        currentLineIndex++;  // Move to the next line for the next cue
+                        updateProgressBar();
                     }
-                    isCueLineShown = false; // Reset for next interaction
-                    currentLineIndex++;  // Move to the next line for the next cue
-                    updateProgressBar();
                 }
             } else {
                 lineDisplay.textContent = "You're done! Well done!";
