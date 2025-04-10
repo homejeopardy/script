@@ -212,12 +212,15 @@
 
             if (currentLineIndex < scriptData.length) {
                 if (!isCueLineShown) {
-                    lineDisplay.textContent = cueLine.trim(); // Show cue line (other character's line)
+                    // Show cue line first (other character's line)
+                    lineDisplay.textContent = cueLine.trim();
                     readCueLine(cueLine); // Read the cue line
                     isCueLineShown = true; // Mark cue line as shown
                 } else {
                     const characterLine = scriptData[currentLineIndex].trim();
-                    lineDisplay.textContent = characterLine; // Show your line
+                    if (currentLine.startsWith(characterName)) { // Only show lines for your character
+                        lineDisplay.textContent = characterLine; // Show your line
+                    }
                     isCueLineShown = false; // Reset for next interaction
                     currentLineIndex++;  // Move to the next line for the next cue
                     updateProgressBar();
