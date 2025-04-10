@@ -1,164 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Line Rehearsal Tool</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
-      background: #f9f9f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-      padding: 40px 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Line Rehearsal Tool</title>
+    <style>
+        /* Default Styles (Light Mode) */
+        :root {
+            --bg-color: white;
+            --text-color: black;
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --highlight-color: #e0e0e0;
+            --loading-animation-color: #2196F3;
+        }
 
-    h1 {
-      margin-bottom: 20px;
-    }
+        /* Dark Mode Styles */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: white;
+            --button-bg: #6200EE;
+            --button-hover: #3700B3;
+            --highlight-color: #333;
+            --loading-animation-color: #FF4081;
+        }
 
-    input, button {
-      padding: 10px;
-      font-size: 1rem;
-      margin: 5px;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s;
+        }
 
-    #line-box {
-      margin-top: 30px;
-      font-size: 1.5rem;
-      text-align: center;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      max-width: 600px;
-      width: 100%;
-      cursor: pointer;
-    }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
 
-    #upload {
-      margin-top: 20px;
-    }
+        .line-display {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: var(--highlight-color);
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-    #progress-bar {
-      height: 10px;
-      width: 100%;
-      background: #ddd;
-      border-radius: 5px;
-      margin-top: 20px;
-      overflow: hidden;
-    }
+        .button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    #progress {
-      height: 100%;
-      width: 0%;
-      background: #4caf50;
-      transition: width 0.3s ease;
-    }
-  </style>
+        .button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .loading-animation {
+            display: none;
+            margin: 20px 0;
+            font-size: 2em;
+            color: var(--loading-animation-color);
+        }
+
+        .settings-panel {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .toggle-settings {
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            margin-top: 20px;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            width: 100%;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0;
+        }
+
+        /* TTS Controls */
+        .tts-controls {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Line Rehearsal Tool</h1>
-  <input type="file" id="upload" />
-  <input type="text" id="character" placeholder="Your CHARACTER NAME (ALL CAPS)" />
-  <div id="line-box">Upload a script and enter your character name.</div>
-  <div id="progress-bar"><div id="progress"></div></div>
+    <div class="container">
+        <h1>Ultimate Line Rehearsal Tool</h1>
+        <button class="button" id="darkModeToggle">Toggle Dark Mode</button>
 
-  <script>
-    let fullScript = [];
-    let yourLines = [];
-    let currentStep = 0;
-    let isShowingCue = true;
+        <div class="loading-animation" id="loadingAnimation">Loading...</div>
+        <div class="line-display" id="lineDisplay" onclick="nextLine()">Click to see next line</div>
 
-    document.getElementById('upload').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const text = event.target.result;
-        parseScript(text);
-      };
-      reader.readAsText(file);
-    });
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
 
-    document.getElementById('character').addEventListener('input', () => {
-      filterLines();
-    });
+        <div class="tts-controls">
+            <label for="ttsSpeed">Speech Speed:</label>
+            <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1.0">
+            <label for="ttsPitch">Speech Pitch:</label>
+            <input type="range" id="ttsPitch" min="0" max="2" step="0.1" value="1.0">
+        </div>
 
-    document.getElementById('line-box').addEventListener('click', () => {
-      showNext();
-    });
+        <div class="settings-panel">
+            <label for="fileInput">Upload Script:</label>
+            <input type="file" id="fileInput" accept=".txt,.pdf,.docx">
+            <div class="toggle-settings" onclick="toggleSettings()">Hide Settings</div>
+        </div>
+    </div>
 
-    function parseScript(text) {
-      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      fullScript = [];
-      let currentCharacter = null;
-      for (let line of lines) {
-        if (line === line.toUpperCase() && /^[A-Z\s]+$/.test(line)) {
-          currentCharacter = line;
-        } else if (currentCharacter) {
-          fullScript.push({ character: currentCharacter, line });
+    <script>
+        let scriptData = [];
+        let currentLineIndex = 0;
+        let ttsEnabled = true;
+        const loadingAnimation = document.getElementById('loadingAnimation');
+        const lineDisplay = document.getElementById('lineDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const ttsSpeed = document.getElementById('ttsSpeed');
+        const ttsPitch = document.getElementById('ttsPitch');
+        const fileInput = document.getElementById('fileInput');
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener('click', () => {
+            document.body.toggleAttribute('data-theme', 'dark');
+        });
+
+        // TTS functionality
+        const utterance = new SpeechSynthesisUtterance();
+        utterance.rate = ttsSpeed.value;
+        utterance.pitch = ttsPitch.value;
+
+        ttsSpeed.addEventListener('input', () => {
+            utterance.rate = ttsSpeed.value;
+        });
+
+        ttsPitch.addEventListener('input', () => {
+            utterance.pitch = ttsPitch.value;
+        });
+
+        function readCueLine(line) {
+            if (ttsEnabled && line) {
+                utterance.text = line;
+                speechSynthesis.speak(utterance);
+            }
         }
-      }
-      filterLines();
-    }
 
-    function filterLines() {
-      const charName = document.getElementById('character').value.trim().toUpperCase();
-      if (!charName || fullScript.length === 0) return;
+        // Load Script from File
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                loadingAnimation.style.display = 'block';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const scriptText = e.target.result;
+                    scriptData = scriptText.split('\n').filter(line => line.trim() !== '');
+                    loadingAnimation.style.display = 'none';
+                    displayNextLine();
+                };
+                reader.readAsText(file);
+            }
+        });
 
-      yourLines = [];
-
-      for (let i = 0; i < fullScript.length; i++) {
-        if (fullScript[i].character === charName) {
-          const cue = fullScript[i - 1]?.line || "(Start of play)";
-          yourLines.push({ cue, line: fullScript[i].line });
+        // Display the next line
+        function nextLine() {
+            if (currentLineIndex < scriptData.length) {
+                const currentLine = scriptData[currentLineIndex];
+                lineDisplay.textContent = currentLine;
+                currentLineIndex++;
+                updateProgressBar();
+                if (currentLineIndex < scriptData.length) {
+                    readCueLine(scriptData[currentLineIndex - 1]); // Read cue line
+                }
+            }
         }
-      }
 
-      currentStep = 0;
-      isShowingCue = true;
-      showNext();
-    }
+        function updateProgressBar() {
+            const progress = (currentLineIndex / scriptData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
 
-    function showNext() {
-      if (yourLines.length === 0) {
-        document.getElementById('line-box').innerText = 'No lines found for that character.';
-        return;
-      }
+        // Congratulatory message after finishing all lines
+        function finishScript() {
+            const messages = ['🎉 You nailed it!', '🎭 Take a bow!', 'Bravo!'];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            alert(message);
+        }
 
-      if (currentStep >= yourLines.length) {
-        document.getElementById('line-box').innerText = getCongratsMessage();
-        document.getElementById('progress').style.width = "100%";
-        return;
-      }
+        // Initial display
+        function displayNextLine() {
+            if (scriptData.length > 0) {
+                lineDisplay.textContent = 'Click to start rehearsing!';
+            }
+        }
 
-      const current = yourLines[currentStep];
-      document.getElementById('line-box').innerText = isShowingCue ? "Cue:\n" + current.cue : "Your line:\n" + current.line;
-      isShowingCue = !isShowingCue;
-
-      if (isShowingCue) {
-        currentStep++;
-        updateProgress();
-      }
-    }
-
-    function updateProgress() {
-      const percent = Math.floor((currentStep / yourLines.length) * 100);
-      document.getElementById('progress').style.width = percent + "%";
-    }
-
-    function getCongratsMessage() {
-      const messages = [
-        "🎉 You nailed it!",
-        "👏 Great job!",
-        "🌟 Bravo!",
-        "💥 Scene mastered!",
-        "🎭 Take a bow!",
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    }
-  </script>
+        displayNextLine();
+    </script>
 </body>
 </html>
