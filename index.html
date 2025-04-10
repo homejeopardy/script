@@ -107,8 +107,22 @@
 <body>
     <div class="container">
         <h1>Ultimate Line Rehearsal Tool</h1>
+
+        <!-- Character Selection -->
+        <div>
+            <label for="characterName">Enter Your Character Name:</label>
+            <input type="text" id="characterName" placeholder="Enter Character's Name">
+        </div>
+
         <button class="button" id="darkModeToggle">Toggle Dark Mode</button>
 
+        <!-- Script Upload -->
+        <div class="settings-panel">
+            <label for="fileInput">Upload Script (Text format):</label>
+            <input type="file" id="fileInput" accept=".txt">
+        </div>
+
+        <!-- Script Display and Controls -->
         <div class="loading-animation" id="loadingAnimation">Loading...</div>
         <div class="line-display" id="lineDisplay" onclick="nextLine()">Click to see next line</div>
 
@@ -122,18 +136,12 @@
             <label for="ttsPitch">Speech Pitch:</label>
             <input type="range" id="ttsPitch" min="0" max="2" step="0.1" value="1.0">
         </div>
-
-        <div class="settings-panel">
-            <label for="fileInput">Upload Script:</label>
-            <input type="file" id="fileInput" accept=".txt,.pdf,.docx">
-            <div class="toggle-settings" onclick="toggleSettings()">Hide Settings</div>
-        </div>
     </div>
 
     <script>
         let scriptData = [];
         let currentLineIndex = 0;
-        let ttsEnabled = true;
+        let characterName = "";
         const loadingAnimation = document.getElementById('loadingAnimation');
         const lineDisplay = document.getElementById('lineDisplay');
         const progressBar = document.getElementById('progressBar');
@@ -141,6 +149,7 @@
         const ttsSpeed = document.getElementById('ttsSpeed');
         const ttsPitch = document.getElementById('ttsPitch');
         const fileInput = document.getElementById('fileInput');
+        const characterNameInput = document.getElementById('characterName');
 
         // Dark Mode Toggle
         darkModeToggle.addEventListener('click', () => {
@@ -161,7 +170,7 @@
         });
 
         function readCueLine(line) {
-            if (ttsEnabled && line) {
+            if (line && speechSynthesis.speaking === false) {
                 utterance.text = line;
                 speechSynthesis.speak(utterance);
             }
@@ -183,16 +192,28 @@
             }
         });
 
-        // Display the next line
+        // Display the next line based on the character name
         function nextLine() {
+            if (characterName === "") {
+                alert("Please enter your character name.");
+                return;
+            }
+
+            let currentLine = scriptData[currentLineIndex];
+            while (!currentLine.trim().startsWith(characterName) && currentLineIndex < scriptData.length) {
+                currentLineIndex++;
+                currentLine = scriptData[currentLineIndex];
+            }
+
             if (currentLineIndex < scriptData.length) {
-                const currentLine = scriptData[currentLineIndex];
+                const cueLine = scriptData[currentLineIndex - 1];
                 lineDisplay.textContent = currentLine;
                 currentLineIndex++;
                 updateProgressBar();
-                if (currentLineIndex < scriptData.length) {
-                    readCueLine(scriptData[currentLineIndex - 1]); // Read cue line
-                }
+                if (cueLine) readCueLine(cueLine); // Read cue line
+            } else {
+                lineDisplay.textContent = "You're done! Well done!";
+                finishScript();
             }
         }
 
@@ -208,14 +229,13 @@
             alert(message);
         }
 
-        // Initial display
-        function displayNextLine() {
-            if (scriptData.length > 0) {
-                lineDisplay.textContent = 'Click to start rehearsing!';
+        // Initial prompt for character name
+        characterNameInput.addEventListener('input', (event) => {
+            characterName = event.target.value.trim();
+            if (characterName) {
+                alert("Character selected: " + characterName);
             }
-        }
-
-        displayNextLine();
+        });
     </script>
 </body>
 </html>
