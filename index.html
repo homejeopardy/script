@@ -6,120 +6,116 @@
 <title>Ultimate Line Rehearsal Tool</title>
 <style>
 :root {
-  --bg: #ffffff;
-  --text: #000000;
-  --highlight: #f0f0f0;
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --highlight-color: #e0e0e0;
 }
 [data-theme="dark"] {
-  --bg: #121212;
-  --text: #ffffff;
-  --highlight: #333333;
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --highlight-color: #333333;
 }
 body {
-  background: var(--bg);
-  color: var(--text);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   font-family: sans-serif;
+  text-align: center;
   margin: 0;
   padding: 20px;
-  text-align: center;
+}
+.line-display {
+  background: var(--highlight-color);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  cursor: pointer;
 }
 button {
-  margin: 10px;
   padding: 10px 20px;
-}
-#display {
-  background: var(--highlight);
-  margin: 20px auto;
-  padding: 20px;
-  max-width: 600px;
-  border-radius: 8px;
+  margin: 10px;
   cursor: pointer;
-  user-select: none;
 }
 </style>
 </head>
-
 <body>
+
 <h1>Ultimate Line Rehearsal Tool</h1>
 
-<input type="file" id="fileInput">
-<br>
-<input type="text" id="characterInput" placeholder="Your Character Name">
-<br>
-<button onclick="startRehearsal()">Start Rehearsal</button>
-<button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+<input type="file" id="fileInput"><br>
 <button onclick="resetRehearsal()">Reset Rehearsal</button>
+<button onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
-<div id="display" onclick="nextLine()" style="display:none;"></div>
+<div class="line-display" onclick="showNextLine()">Click to Start</div>
 
 <script>
-let scriptLines = [];
-let myLines = [];
+let lines = [];
+let userLines = [];
 let currentIndex = 0;
 let showingCue = true;
-let myCharacter = "";
+let characterName = "";
 
-function startRehearsal() {
-  const file = document.getElementById('fileInput').files[0];
-  myCharacter = document.getElementById('characterInput').value.trim().toUpperCase();
-  if (!file || !myCharacter) {
-    alert("Upload your script and enter your character name.");
-    return;
-  }
-
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
   const reader = new FileReader();
-  reader.onload = function(e) {
-    const raw = e.target.result.split(/\r?\n/);
-    parseScript(raw);
-    currentIndex = 0;
-    showingCue = true;
-    document.getElementById('display').style.display = 'block';
-    showCue();
+  reader.onload = function(event) {
+    processScript(event.target.result);
   };
   reader.readAsText(file);
+});
+
+function processScript(text) {
+  const rawLines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+  lines = [];
+
+  for (let i = 0; i < rawLines.length - 1; i++) {
+    if (rawLines[i] === rawLines[i].toUpperCase()) {
+      lines.push({ character: rawLines[i], line: rawLines[i + 1] });
+    }
+  }
+
+  characterName = prompt("Enter your character name exactly as in the script:").toUpperCase();
+  userLines = lines.filter((entry, index) => entry.character === characterName)
+                   .map((entry, index, arr) => {
+                     const cueIndex = lines.findIndex(l => l === entry);
+                     return {
+                       cue: cueIndex > 0 ? lines[cueIndex - 1].line : "(start)",
+                       line: entry.line
+                     };
+                   });
+
+  currentIndex = 0;
+  showingCue = true;
+  document.querySelector('.line-display').textContent = "Click to Start";
 }
 
-function parseScript(lines) {
-  scriptLines = [];
-  for (let i = 0; i < lines.length - 1; i++) {
-    if (lines[i].trim().toUpperCase() === myCharacter) {
-      scriptLines.push({ cue: lines[i-1] || "(Start)", line: lines[i+1] || "" });
+function showNextLine() {
+  if (!userLines.length) return;
+
+  if (showingCue) {
+    document.querySelector('.line-display').textContent = userLines[currentIndex].cue;
+    showingCue = false;
+  } else {
+    document.querySelector('.line-display').textContent = userLines[currentIndex].line;
+    showingCue = true;
+    currentIndex++;
+    if (currentIndex >= userLines.length) {
+      document.querySelector('.line-display').textContent = "🎉 Done!";
     }
   }
 }
 
-function showCue() {
-  if (currentIndex >= scriptLines.length) {
-    document.getElementById('display').innerText = "🎉 End of Script!";
-    return;
-  }
-  document.getElementById('display').innerText = scriptLines[currentIndex].cue;
-}
-
-function showMyLine() {
-  document.getElementById('display').innerText = scriptLines[currentIndex].line;
-}
-
-function nextLine() {
-  if (currentIndex >= scriptLines.length) return;
-  if (showingCue) {
-    showMyLine();
-    showingCue = false;
-  } else {
-    currentIndex++;
-    showCue();
-    showingCue = true;
-  }
+function resetRehearsal() {
+  lines = [];
+  userLines = [];
+  currentIndex = 0;
+  showingCue = true;
+  characterName = "";
+  document.getElementById('fileInput').value = "";
+  document.querySelector('.line-display').textContent = "Click to Start";
 }
 
 function toggleDarkMode() {
-  document.documentElement.toggleAttribute('data-theme', 'dark');
-}
-
-function resetRehearsal() {
-  currentIndex = 0;
-  showingCue = true;
-  showCue();
+  document.body.toggleAttribute('data-theme', 'dark');
 }
 </script>
 
