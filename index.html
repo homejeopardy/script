@@ -213,12 +213,15 @@
             if (currentLineIndex < scriptData.length) {
                 if (!isCueLineShown) {
                     // Show cue line first (other character's line)
-                    lineDisplay.textContent = cueLine.trim();
-                    readCueLine(cueLine); // Read the cue line
-                    isCueLineShown = true; // Mark cue line as shown
+                    if (!currentLine.startsWith(characterName)) {
+                        lineDisplay.textContent = cueLine.trim();
+                        readCueLine(cueLine); // Read the cue line
+                        isCueLineShown = true; // Mark cue line as shown
+                    }
                 } else {
-                    const characterLine = scriptData[currentLineIndex].trim();
-                    if (currentLine.startsWith(characterName)) { // Only show lines for your character
+                    // Now display your line if it matches the character name
+                    if (currentLine.startsWith(characterName)) {
+                        const characterLine = currentLine.trim();
                         lineDisplay.textContent = characterLine; // Show your line
                     }
                     isCueLineShown = false; // Reset for next interaction
