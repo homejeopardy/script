@@ -200,14 +200,14 @@
             }
 
             let currentLine = scriptData[currentLineIndex];
-            while (!currentLine.trim().startsWith(characterName) && currentLineIndex < scriptData.length) {
+            while (currentLineIndex < scriptData.length && !currentLine.trim().startsWith(characterName)) {
                 currentLineIndex++;
                 currentLine = scriptData[currentLineIndex];
             }
 
             if (currentLineIndex < scriptData.length) {
-                const cueLine = scriptData[currentLineIndex - 1];
-                lineDisplay.textContent = currentLine;
+                const cueLine = scriptData[currentLineIndex - 1]; // The line before the current one
+                lineDisplay.textContent = currentLine.trim(); // Show the character's line
                 currentLineIndex++;
                 updateProgressBar();
                 if (cueLine) readCueLine(cueLine); // Read cue line
@@ -232,9 +232,6 @@
         // Initial prompt for character name
         characterNameInput.addEventListener('input', (event) => {
             characterName = event.target.value.trim();
-            if (characterName) {
-                alert("Character selected: " + characterName);
-            }
         });
     </script>
 </body>
