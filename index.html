@@ -1,202 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Line Rehearsal Tool</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        }
+  <meta charset="UTF-8" />
+  <title>Line Rehearsal Tool</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding: 40px 20px;
+    }
 
-        .container {
-            width: 80%;
-            max-width: 700px;
-            text-align: center;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
+    h1 {
+      margin-bottom: 20px;
+    }
 
-        h1 {
-            color: #333;
-            font-size: 2em;
-        }
+    input, button {
+      padding: 10px;
+      font-size: 1rem;
+      margin: 5px;
+    }
 
-        .line-display {
-            font-size: 1.2em;
-            color: #555;
-            padding: 20px;
-            margin: 20px 0;
-            background-color: #eaeaea;
-            border-radius: 5px;
-        }
+    #line-box {
+      margin-top: 30px;
+      font-size: 1.5rem;
+      text-align: center;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      cursor: pointer;
+    }
 
-        .settings-panel {
-            display: none;
-            background-color: #f0f0f0;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
+    #upload {
+      margin-top: 20px;
+    }
 
-        .progress-bar {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
+    #progress-bar {
+      height: 10px;
+      width: 100%;
+      background: #ddd;
+      border-radius: 5px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
 
-        .progress-bar span {
-            display: block;
-            height: 20px;
-            background-color: #4caf50;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .dark-mode {
-            background-color: #2c2c2c;
-            color: white;
-        }
-
-        .light-mode {
-            background-color: #f4f4f4;
-            color: #333;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        #upload-file {
-            margin-top: 20px;
-        }
-    </style>
+    #progress {
+      height: 100%;
+      width: 0%;
+      background: #4caf50;
+      transition: width 0.3s ease;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Line Rehearsal Tool</h1>
+  <h1>Line Rehearsal Tool</h1>
+  <input type="file" id="upload" />
+  <input type="text" id="character" placeholder="Your CHARACTER NAME (ALL CAPS)" />
+  <div id="line-box">Upload a script and enter your character name.</div>
+  <div id="progress-bar"><div id="progress"></div></div>
 
-        <label for="character-name">Enter Your Character's Name:</label>
-        <input type="text" id="character-name" placeholder="Character Name" />
+  <script>
+    let fullScript = [];
+    let yourLines = [];
+    let currentStep = 0;
+    let isShowingCue = true;
 
-        <div class="line-display" id="line-display">Please enter your character name and upload your script.</div>
+    document.getElementById('upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const text = event.target.result;
+        parseScript(text);
+      };
+      reader.readAsText(file);
+    });
 
-        <button id="toggle-settings">Settings</button>
-        <div class="settings-panel" id="settings-panel">
-            <label for="theme-toggle">Dark Mode</label>
-            <input type="checkbox" id="theme-toggle">
-        </div>
+    document.getElementById('character').addEventListener('input', () => {
+      filterLines();
+    });
 
-        <div class="progress-bar">
-            <span id="progress" style="width: 0%"></span>
-        </div>
+    document.getElementById('line-box').addEventListener('click', () => {
+      showNext();
+    });
 
-        <div id="upload-file">
-            <input type="file" id="file-input" />
-        </div>
-    </div>
-
-    <script>
-        let scriptLines = [];
-        let currentLineIndex = 0;
-        let characterName = '';
-        let progress = 0;
-
-        // Event listeners
-        document.getElementById('file-input').addEventListener('change', handleFileUpload);
-        document.getElementById('character-name').addEventListener('input', updateCharacterName);
-        document.getElementById('toggle-settings').addEventListener('click', toggleSettings);
-        document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    parseScript(e.target.result);
-                };
-                reader.readAsText(file);
-            }
+    function parseScript(text) {
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      fullScript = [];
+      let currentCharacter = null;
+      for (let line of lines) {
+        if (line === line.toUpperCase() && /^[A-Z\s]+$/.test(line)) {
+          currentCharacter = line;
+        } else if (currentCharacter) {
+          fullScript.push({ character: currentCharacter, line });
         }
+      }
+      filterLines();
+    }
 
-        function updateCharacterName(event) {
-            characterName = event.target.value.trim();
-            if (characterName) {
-                currentLineIndex = 0;
-                displayNextLine();
-            }
+    function filterLines() {
+      const charName = document.getElementById('character').value.trim().toUpperCase();
+      if (!charName || fullScript.length === 0) return;
+
+      yourLines = [];
+
+      for (let i = 0; i < fullScript.length; i++) {
+        if (fullScript[i].character === charName) {
+          const cue = fullScript[i - 1]?.line || "(Start of play)";
+          yourLines.push({ cue, line: fullScript[i].line });
         }
+      }
 
-        function parseScript(text) {
-            const lines = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
-            scriptLines = [];
-            let character = '';
-            lines.forEach(line => {
-                if (line.toUpperCase() === line) {
-                    character = line; // The character name is in uppercase
-                } else {
-                    scriptLines.push({ character, line });
-                }
-            });
-            displayNextLine();
-        }
+      currentStep = 0;
+      isShowingCue = true;
+      showNext();
+    }
 
-        function displayNextLine() {
-            if (!characterName || scriptLines.length === 0) return;
+    function showNext() {
+      if (yourLines.length === 0) {
+        document.getElementById('line-box').innerText = 'No lines found for that character.';
+        return;
+      }
 
-            const linesForCharacter = scriptLines.filter(line => line.character === characterName);
-            if (linesForCharacter.length === 0) {
-                document.getElementById('line-display').innerText = 'No lines found for this character.';
-                return;
-            }
+      if (currentStep >= yourLines.length) {
+        document.getElementById('line-box').innerText = getCongratsMessage();
+        document.getElementById('progress').style.width = "100%";
+        return;
+      }
 
-            // Display the previous line as cue, and then the current line
-            const currentLine = linesForCharacter[currentLineIndex];
-            const previousLine = currentLineIndex > 0 ? linesForCharacter[currentLineIndex - 1].line : '';
-            document.getElementById('line-display').innerHTML = `<b>${previousLine}</b><br><i>${currentLine.character}: </i>${currentLine.line}`;
+      const current = yourLines[currentStep];
+      document.getElementById('line-box').innerText = isShowingCue ? "Cue:\n" + current.cue : "Your line:\n" + current.line;
+      isShowingCue = !isShowingCue;
 
-            // Update progress
-            progress = ((currentLineIndex + 1) / linesForCharacter.length) * 100;
-            document.getElementById('progress').style.width = `${progress}%`;
-        }
+      if (isShowingCue) {
+        currentStep++;
+        updateProgress();
+      }
+    }
 
-        function toggleSettings() {
-            const settingsPanel = document.getElementById('settings-panel');
-            settingsPanel.classList.toggle('hidden');
-        }
+    function updateProgress() {
+      const percent = Math.floor((currentStep / yourLines.length) * 100);
+      document.getElementById('progress').style.width = percent + "%";
+    }
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            document.body.classList.toggle('light-mode');
-        }
-
-        document.getElementById('line-display').addEventListener('click', function () {
-            if (currentLineIndex >= scriptLines.length) return;
-
-            currentLineIndex++;
-            displayNextLine();
-        });
-    </script>
+    function getCongratsMessage() {
+      const messages = [
+        "🎉 You nailed it!",
+        "👏 Great job!",
+        "🌟 Bravo!",
+        "💥 Scene mastered!",
+        "🎭 Take a bow!",
+      ];
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+  </script>
 </body>
 </html>
