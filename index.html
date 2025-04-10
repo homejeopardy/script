@@ -10,7 +10,180 @@
             --bg-color: white;
             --text-color: black;
             --button-bg: #4CAF50;
+            --button-hover: #45a049;<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Rehearsal Tool</title>
+    <style>
+        /* Default Styles */
+        :root {
+            --bg-color: white;
+            --text-color: black;
+            --highlight-color: #f4f4f4;
+            --button-color: #4CAF50;
             --button-hover: #45a049;
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: white;
+            --highlight-color: #333;
+            --button-color: #6200EE;
+            --button-hover: #3700B3;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .line-display {
+            margin: 20px;
+            padding: 20px;
+            background-color: var(--highlight-color);
+            border-radius: 8px;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .button {
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .file-upload {
+            margin-top: 20px;
+        }
+
+        #loading {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Line Rehearsal Tool</h1>
+        <div>
+            <label for="characterName">Enter Your Character Name:</label>
+            <input type="text" id="characterName" placeholder="Character's Name">
+        </div>
+
+        <button id="darkModeToggle" class="button">Toggle Dark Mode</button>
+
+        <div class="file-upload">
+            <label for="fileInput">Upload Script (Text format):</label>
+            <input type="file" id="fileInput" accept=".txt">
+        </div>
+
+        <div id="loading">Loading...</div>
+
+        <div id="lineDisplay" class="line-display" onclick="showNextLine()">Click to show next line</div>
+
+        <button class="button" onclick="resetRehearsal()">Reset Rehearsal</button>
+
+    </div>
+
+    <script>
+        let scriptData = [];
+        let currentLineIndex = 0;
+        let isWaitingForCue = true; // Tracks whether we are waiting for the cue or the character line.
+        let characterName = '';
+        const lineDisplay = document.getElementById('lineDisplay');
+        const loading = document.getElementById('loading');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const fileInput = document.getElementById('fileInput');
+        const characterNameInput = document.getElementById('characterName');
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener('click', () => {
+            document.body.toggleAttribute('data-theme', 'dark');
+        });
+
+        // Handle File Upload
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                loading.style.display = 'block';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const scriptText = e.target.result;
+                    scriptData = scriptText.split('\n').filter(line => line.trim() !== '');
+                    loading.style.display = 'none';
+                    showNextLine(); // Display the first line when script is loaded
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Show the next line (alternating between cue and character line)
+        function showNextLine() {
+            if (characterName === "") {
+                alert("Please enter your character name.");
+                return;
+            }
+
+            let currentLine = scriptData[currentLineIndex];
+
+            if (isWaitingForCue) {
+                // Show cue line (line from other character)
+                if (!currentLine.startsWith(characterName)) {
+                    lineDisplay.textContent = currentLine.trim();
+                    isWaitingForCue = false; // After cue, show character's line on next click
+                }
+            } else {
+                // Show character's line
+                if (currentLine.startsWith(characterName)) {
+                    lineDisplay.textContent = currentLine.trim();
+                    isWaitingForCue = true; // After character's line, show cue line on next click
+                    currentLineIndex++; // Move to the next line
+                }
+            }
+
+            // Check if we finished the script
+            if (currentLineIndex >= scriptData.length) {
+                lineDisplay.textContent = "You're done! Well done!";
+            }
+        }
+
+        // Reset Rehearsal
+        function resetRehearsal() {
+            currentLineIndex = 0;
+            isWaitingForCue = true;
+            lineDisplay.textContent = "Click to show next line";
+        }
+
+        // Character Name Input Handling
+        characterNameInput.addEventListener('input', (event) => {
+            characterName = event.target.value.trim();
+        });
+
+    </script>
+</body>
+</html>
+
             --highlight-color: #e0e0e0;
             --loading-animation-color: #2196F3;
         }
