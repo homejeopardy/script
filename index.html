@@ -142,6 +142,7 @@
         let scriptData = [];
         let currentLineIndex = 0;
         let characterName = "";
+        let isCueLineShown = false;  // To track if the cue line is shown
         const loadingAnimation = document.getElementById('loadingAnimation');
         const lineDisplay = document.getElementById('lineDisplay');
         const progressBar = document.getElementById('progressBar');
@@ -210,15 +211,17 @@
             }
 
             if (currentLineIndex < scriptData.length) {
-                lineDisplay.textContent = cueLine.trim(); // Show cue line (other character's line)
-                readCueLine(cueLine); // Read the cue line
-                currentLineIndex++;  // Move to the next line for the character's line
-                setTimeout(() => {
-                    // After a brief delay, show the character's line
+                if (!isCueLineShown) {
+                    lineDisplay.textContent = cueLine.trim(); // Show cue line (other character's line)
+                    readCueLine(cueLine); // Read the cue line
+                    isCueLineShown = true; // Mark cue line as shown
+                } else {
                     const characterLine = scriptData[currentLineIndex].trim();
                     lineDisplay.textContent = characterLine; // Show your line
+                    isCueLineShown = false; // Reset for next interaction
+                    currentLineIndex++;  // Move to the next line for the next cue
                     updateProgressBar();
-                }, 2000); // Wait for 2 seconds before showing the character's line
+                }
             } else {
                 lineDisplay.textContent = "You're done! Well done!";
                 finishScript();
