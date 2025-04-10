@@ -152,7 +152,10 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const scriptText = e.target.result;
-                    scriptData = scriptText.split('\n').filter(line => line.trim() !== '');
+                    scriptData = scriptText.split('\n').map(line => {
+                        const parts = line.split('\n');
+                        return parts;
+                    }).filter(line => line.trim() !== '');
                     loading.style.display = 'none';
                     showNextLine(); // Display the first line when script is loaded
                 };
@@ -171,13 +174,13 @@
 
             if (isWaitingForCue) {
                 // Show cue line (line from other character)
-                if (!currentLine.startsWith(characterName)) {
+                if (!currentLine[0].startsWith(characterName)) {
                     lineDisplay.textContent = currentLine.trim();
                     isWaitingForCue = false; // After cue, show character's line on next click
                 }
             } else {
                 // Show character's line
-                if (currentLine.startsWith(characterName)) {
+                if (currentLine[0].startsWith(characterName)) {
                     lineDisplay.textContent = currentLine.trim();
                     isWaitingForCue = true; // After character's line, show cue line on next click
                     currentLineIndex++; // Move to the next line
