@@ -1,1 +1,164 @@
-index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Line Rehearsal Tool</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 1rem;
+      margin: 5px;
+    }
+
+    #line-box {
+      margin-top: 30px;
+      font-size: 1.5rem;
+      text-align: center;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    #upload {
+      margin-top: 20px;
+    }
+
+    #progress-bar {
+      height: 10px;
+      width: 100%;
+      background: #ddd;
+      border-radius: 5px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    #progress {
+      height: 100%;
+      width: 0%;
+      background: #4caf50;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <h1>Line Rehearsal Tool</h1>
+  <input type="file" id="upload" />
+  <input type="text" id="character" placeholder="Your CHARACTER NAME (ALL CAPS)" />
+  <div id="line-box">Upload a script and enter your character name.</div>
+  <div id="progress-bar"><div id="progress"></div></div>
+
+  <script>
+    let fullScript = [];
+    let yourLines = [];
+    let currentStep = 0;
+    let isShowingCue = true;
+
+    document.getElementById('upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const text = event.target.result;
+        parseScript(text);
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('character').addEventListener('input', () => {
+      filterLines();
+    });
+
+    document.getElementById('line-box').addEventListener('click', () => {
+      showNext();
+    });
+
+    function parseScript(text) {
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      fullScript = [];
+      let currentCharacter = null;
+      for (let line of lines) {
+        if (line === line.toUpperCase() && /^[A-Z\s]+$/.test(line)) {
+          currentCharacter = line;
+        } else if (currentCharacter) {
+          fullScript.push({ character: currentCharacter, line });
+        }
+      }
+      filterLines();
+    }
+
+    function filterLines() {
+      const charName = document.getElementById('character').value.trim().toUpperCase();
+      if (!charName || fullScript.length === 0) return;
+
+      yourLines = [];
+
+      for (let i = 0; i < fullScript.length; i++) {
+        if (fullScript[i].character === charName) {
+          const cue = fullScript[i - 1]?.line || "(Start of play)";
+          yourLines.push({ cue, line: fullScript[i].line });
+        }
+      }
+
+      currentStep = 0;
+      isShowingCue = true;
+      showNext();
+    }
+
+    function showNext() {
+      if (yourLines.length === 0) {
+        document.getElementById('line-box').innerText = 'No lines found for that character.';
+        return;
+      }
+
+      if (currentStep >= yourLines.length) {
+        document.getElementById('line-box').innerText = getCongratsMessage();
+        document.getElementById('progress').style.width = "100%";
+        return;
+      }
+
+      const current = yourLines[currentStep];
+      document.getElementById('line-box').innerText = isShowingCue ? "Cue:\n" + current.cue : "Your line:\n" + current.line;
+      isShowingCue = !isShowingCue;
+
+      if (isShowingCue) {
+        currentStep++;
+        updateProgress();
+      }
+    }
+
+    function updateProgress() {
+      const percent = Math.floor((currentStep / yourLines.length) * 100);
+      document.getElementById('progress').style.width = percent + "%";
+    }
+
+    function getCongratsMessage() {
+      const messages = [
+        "🎉 You nailed it!",
+        "👏 Great job!",
+        "🌟 Bravo!",
+        "💥 Scene mastered!",
+        "🎭 Take a bow!",
+      ];
+      return messages[Math.floor(Math.random() * messages.length)];
+    }
+  </script>
+</body>
+</html>
