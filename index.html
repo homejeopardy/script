@@ -3,36 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Line Rehearsal Tool</title>
-    <style>
-        /* Default Styles (Light Mode) */
-        :root {
-            --bg-color: white;
-            --text-color: black;
-            --button-bg: #4CAF50;
-            --button-hover: #45a049;<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Line Rehearsal Tool</title>
     <style>
         /* Default Styles */
         :root {
             --bg-color: white;
             --text-color: black;
-            --highlight-color: #f4f4f4;
-            --button-color: #4CAF50;
+            --highlight-color: #e0e0e0;
+            --button-bg: #4CAF50;
             --button-hover: #45a049;
+            --loading-animation-color: #2196F3;
         }
 
         /* Dark Mode Styles */
         [data-theme="dark"] {
             --bg-color: #121212;
             --text-color: white;
-            --highlight-color: #333;
-            --button-color: #6200EE;
+            --button-bg: #6200EE;
             --button-hover: #3700B3;
+            --highlight-color: #333;
+            --loading-animation-color: #FF4081;
         }
 
         body {
@@ -41,29 +31,31 @@
             color: var(--text-color);
             margin: 0;
             padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.3s;
         }
 
         .container {
+            padding: 20px;
             max-width: 600px;
-            margin: auto;
+            margin: 0 auto;
             text-align: center;
         }
 
         .line-display {
-            margin: 20px;
+            margin: 20px 0;
             padding: 20px;
             background-color: var(--highlight-color);
-            border-radius: 8px;
             font-size: 1.5em;
+            border-radius: 8px;
             cursor: pointer;
         }
 
         .button {
-            background-color: var(--button-color);
+            background-color: var(--button-bg);
             color: white;
             border: none;
             padding: 10px 20px;
+            font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -73,19 +65,50 @@
             background-color: var(--button-hover);
         }
 
-        .file-upload {
+        .loading-animation {
+            display: none;
+            margin: 20px 0;
+            font-size: 2em;
+            color: var(--loading-animation-color);
+        }
+
+        /* TTS Controls */
+        .tts-controls {
             margin-top: 20px;
         }
 
-        #loading {
-            display: none;
+        /* Settings Panel */
+        .settings-panel {
+            margin-top: 20px;
+            display: block;
         }
 
+        .toggle-settings {
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            margin-top: 20px;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            width: 100%;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Line Rehearsal Tool</h1>
+
         <div>
             <label for="characterName">Enter Your Character Name:</label>
             <input type="text" id="characterName" placeholder="Character's Name">
@@ -98,12 +121,11 @@
             <input type="file" id="fileInput" accept=".txt">
         </div>
 
-        <div id="loading">Loading...</div>
+        <div id="loading" class="loading-animation">Loading...</div>
 
         <div id="lineDisplay" class="line-display" onclick="showNextLine()">Click to show next line</div>
 
         <button class="button" onclick="resetRehearsal()">Reset Rehearsal</button>
-
     </div>
 
     <script>
@@ -180,249 +202,6 @@
             characterName = event.target.value.trim();
         });
 
-    </script>
-</body>
-</html>
-
-            --highlight-color: #e0e0e0;
-            --loading-animation-color: #2196F3;
-        }
-
-        /* Dark Mode Styles */
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: white;
-            --button-bg: #6200EE;
-            --button-hover: #3700B3;
-            --highlight-color: #333;
-            --loading-animation-color: #FF4081;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            transition: all 0.3s;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .line-display {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: var(--highlight-color);
-            font-size: 1.2em;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .button {
-            background-color: var(--button-bg);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .button:hover {
-            background-color: var(--button-hover);
-        }
-
-        .loading-animation {
-            display: none;
-            margin: 20px 0;
-            font-size: 2em;
-            color: var(--loading-animation-color);
-        }
-
-        .settings-panel {
-            margin-top: 20px;
-            display: block;
-        }
-
-        .toggle-settings {
-            font-size: 1.2em;
-            cursor: pointer;
-        }
-
-        .progress-bar {
-            margin-top: 20px;
-            height: 10px;
-            background-color: #ddd;
-            border-radius: 5px;
-            width: 100%;
-            position: relative;
-        }
-
-        .progress {
-            height: 100%;
-            background-color: #4CAF50;
-            border-radius: 5px;
-            width: 0;
-        }
-
-        /* TTS Controls */
-        .tts-controls {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Ultimate Line Rehearsal Tool</h1>
-
-        <!-- Character Selection -->
-        <div>
-            <label for="characterName">Enter Your Character Name:</label>
-            <input type="text" id="characterName" placeholder="Enter Character's Name">
-        </div>
-
-        <button class="button" id="darkModeToggle">Toggle Dark Mode</button>
-
-        <!-- Script Upload -->
-        <div class="settings-panel">
-            <label for="fileInput">Upload Script (Text format):</label>
-            <input type="file" id="fileInput" accept=".txt">
-        </div>
-
-        <!-- Script Display and Controls -->
-        <div class="loading-animation" id="loadingAnimation">Loading...</div>
-        <div class="line-display" id="lineDisplay" onclick="nextLine()">Click to see next line</div>
-
-        <div class="progress-bar">
-            <div class="progress" id="progressBar"></div>
-        </div>
-
-        <div class="tts-controls">
-            <label for="ttsSpeed">Speech Speed:</label>
-            <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1.0">
-            <label for="ttsPitch">Speech Pitch:</label>
-            <input type="range" id="ttsPitch" min="0" max="2" step="0.1" value="1.0">
-        </div>
-    </div>
-
-    <script>
-        let scriptData = [];
-        let currentLineIndex = 0;
-        let characterName = "";
-        let isCueLineShown = false;  // To track if the cue line is shown
-        const loadingAnimation = document.getElementById('loadingAnimation');
-        const lineDisplay = document.getElementById('lineDisplay');
-        const progressBar = document.getElementById('progressBar');
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const ttsSpeed = document.getElementById('ttsSpeed');
-        const ttsPitch = document.getElementById('ttsPitch');
-        const fileInput = document.getElementById('fileInput');
-        const characterNameInput = document.getElementById('characterName');
-
-        // Dark Mode Toggle
-        darkModeToggle.addEventListener('click', () => {
-            document.body.toggleAttribute('data-theme', 'dark');
-        });
-
-        // TTS functionality
-        const utterance = new SpeechSynthesisUtterance();
-        utterance.rate = ttsSpeed.value;
-        utterance.pitch = ttsPitch.value;
-
-        ttsSpeed.addEventListener('input', () => {
-            utterance.rate = ttsSpeed.value;
-        });
-
-        ttsPitch.addEventListener('input', () => {
-            utterance.pitch = ttsPitch.value;
-        });
-
-        function readCueLine(line) {
-            if (line && speechSynthesis.speaking === false) {
-                utterance.text = line;
-                speechSynthesis.speak(utterance);
-            }
-        }
-
-        // Load Script from File
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                loadingAnimation.style.display = 'block';
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const scriptText = e.target.result;
-                    scriptData = scriptText.split('\n').filter(line => line.trim() !== '');
-                    loadingAnimation.style.display = 'none';
-                    displayNextLine();
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        // Display the next line based on the character name
-        function nextLine() {
-            if (characterName === "") {
-                alert("Please enter your character name.");
-                return;
-            }
-
-            let currentLine = scriptData[currentLineIndex];
-            let cueLine = "";
-
-            // Find the cue line (line before the character's line)
-            while (currentLineIndex < scriptData.length && !currentLine.trim().startsWith(characterName)) {
-                cueLine = currentLine;  // Store the previous line as cue line
-                currentLineIndex++;
-                currentLine = scriptData[currentLineIndex];
-            }
-
-            if (currentLineIndex < scriptData.length) {
-                if (!isCueLineShown) {
-                    // Show cue line first (other character's line)
-                    if (!currentLine.startsWith(characterName)) {
-                        lineDisplay.textContent = cueLine.trim();
-                        readCueLine(cueLine); // Read the cue line
-                        isCueLineShown = true; // Mark cue line as shown
-                    }
-                } else {
-                    // Now display your line if it matches the character name
-                    if (currentLine.startsWith(characterName)) {
-                        const characterLine = currentLine.trim();
-                        lineDisplay.textContent = characterLine; // Show your line
-                        isCueLineShown = false; // Reset for next interaction
-                        currentLineIndex++;  // Move to the next line for the next cue
-                        updateProgressBar();
-                    }
-                }
-            } else {
-                lineDisplay.textContent = "You're done! Well done!";
-                finishScript();
-            }
-        }
-
-        function updateProgressBar() {
-            const progress = (currentLineIndex / scriptData.length) * 100;
-            progressBar.style.width = `${progress}%`;
-        }
-
-        // Congratulatory message after finishing all lines
-        function finishScript() {
-            const messages = ['🎉 You nailed it!', '🎭 Take a bow!', 'Bravo!'];
-            const message = messages[Math.floor(Math.random() * messages.length)];
-            alert(message);
-        }
-
-        // Initial prompt for character name
-        characterNameInput.addEventListener('input', (event) => {
-            characterName = event.target.value.trim();
-        });
     </script>
 </body>
 </html>
