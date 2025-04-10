@@ -200,17 +200,25 @@
             }
 
             let currentLine = scriptData[currentLineIndex];
+            let cueLine = "";
+
+            // Find the cue line (line before the character's line)
             while (currentLineIndex < scriptData.length && !currentLine.trim().startsWith(characterName)) {
+                cueLine = currentLine;  // Store the previous line as cue line
                 currentLineIndex++;
                 currentLine = scriptData[currentLineIndex];
             }
 
             if (currentLineIndex < scriptData.length) {
-                const cueLine = scriptData[currentLineIndex - 1]; // The line before the current one
-                lineDisplay.textContent = currentLine.trim(); // Show the character's line
-                currentLineIndex++;
-                updateProgressBar();
-                if (cueLine) readCueLine(cueLine); // Read cue line
+                lineDisplay.textContent = cueLine.trim(); // Show cue line (other character's line)
+                readCueLine(cueLine); // Read the cue line
+                currentLineIndex++;  // Move to the next line for the character's line
+                setTimeout(() => {
+                    // After a brief delay, show the character's line
+                    const characterLine = scriptData[currentLineIndex].trim();
+                    lineDisplay.textContent = characterLine; // Show your line
+                    updateProgressBar();
+                }, 2000); // Wait for 2 seconds before showing the character's line
             } else {
                 lineDisplay.textContent = "You're done! Well done!";
                 finishScript();
