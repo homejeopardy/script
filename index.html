@@ -1,125 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Line Rehearsal Tool - Eurydice Edition</title>
-<style>
-:root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --highlight-color: #e0e0e0;
-}
-.dark {
-  --bg-color: #121212;
-  --text-color: #ffffff;
-  --highlight-color: #333333;
-}
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
-}
-.line-display {
-  background: var(--highlight-color);
-  padding: 20px;
-  border-radius: 8px;
-  margin: 20px 0;
-  cursor: pointer;
-  white-space: pre-wrap;
-}
-button {
-  padding: 10px 20px;
-  margin: 10px;
-  cursor: pointer;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ultimate Line Rehearsal Tool</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --highlight-color: #e0e0e0;
+    }
+    .dark {
+      --bg-color: #121212;
+      --text-color: #ffffff;
+      --highlight-color: #333333;
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .line-display {
+      background: var(--highlight-color);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      cursor: pointer;
+      white-space: pre-wrap;
+    }
+    button, select {
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Ultimate Line Rehearsal Tool</h1>
+  <h1>Ultimate Line Rehearsal Tool</h1>
 
-<button onclick="resetRehearsal()">Reset Rehearsal</button>
-<button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  <label for="characterSelect">Select Your Character:</label>
+  <select id="characterSelect"></select>
 
-<div class="line-display" onclick="showNextLine()">Click to Start</div>
+  <label for="voiceSelect">Select Cue Voice:</label>
+  <select id="voiceSelect"></select>
 
-<script>
-// Eurydice script (shortened for this example)
-const lines = [
-{ character: "EURYDICE", line: "All those birds? Thank you." },
-{ character: "ORPHEUS", line: "Music." },
-{ character: "EURYDICE", line: "How can you think about music? You either hear it or you don’t." },
-{ character: "ORPHEUS", line: "I’m hearing it then." },
-// Add full script here
-];
+  <button onclick="resetRehearsal()">Reset Rehearsal</button>
+  <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  <button onclick="pauseSpeech()">Pause</button>
+  <button onclick="resumeSpeech()">Resume</button>
+  <button onclick="skipCue()">Skip Cue</button>
 
-let userLines = [];
-let currentIndex = 0;
-let showingCue = true;
-let characterName = "";
+  <div class="line-display" onclick="showNextLine()">Click to Start</div>
 
-// Text-to-Speech for cues
-function speak(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1.1;
-  speechSynthesis.speak(utterance);
-}
+  <script>
+    const lines = [
+      { character: "EURYDICE", line: "All those birds? Thank you." },
+      { character: "ORPHEUS", line: "Music." },
+      { character: "EURYDICE", line: "How can you think about music? You either hear it or you don’t." },
+      { character: "ORPHEUS", line: "I’m hearing it then." },
+      // ... Add the full script here
+    ];
 
-function startRehearsal() {
-  characterName = prompt("Enter your character name exactly as in the script:").toUpperCase();
-  userLines = lines.filter(entry => entry.character === characterName)
-                   .map(entry => {
-                     const cueIndex = lines.indexOf(entry);
-                     return {
-                       cue: cueIndex > 0 ? lines[cueIndex - 1].line : "(start)",
-                       line: entry.line
-                     };
-                   });
-  currentIndex = 0;
-  showingCue = true;
-  document.querySelector('.line-display').textContent = "Click to Start";
-}
+    let userLines = [];
+    let currentIndex = 0;
+    let showingCue = true;
+    let characterName = "";
+    let selectedVoice = null;
 
-function showNextLine() {
-  if (!userLines.length) {
-    startRehearsal();
-    return;
-  }
+    const characterSelect = document.getElementById('characterSelect');
+    const voiceSelect = document.getElementById('voiceSelect');
 
-  if (currentIndex >= userLines.length) {
-    document.querySelector('.line-display').textContent = "🎉 Done!";
-    return;
-  }
+    function populateCharacterList() {
+      const characters = [...new Set(lines.map(line => line.character))];
+      characters.forEach(char => {
+        const option = document.createElement('option');
+        option.value = char;
+        option.textContent = char;
+        characterSelect.appendChild(option);
+      });
+    }
 
-  const display = document.querySelector('.line-display');
+    function populateVoiceList() {
+      const voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+    }
 
-  if (showingCue) {
-    display.textContent = userLines[currentIndex].cue;
-    speak(userLines[currentIndex].cue);  // Read cue out loud
-    showingCue = false;
-  } else {
-    display.textContent = userLines[currentIndex].line;
-    showingCue = true;
-    currentIndex++;
-  }
-}
+    speechSynthesis.onvoiceschanged = populateVoiceList;
 
-function resetRehearsal() {
-  userLines = [];
-  currentIndex = 0;
-  showingCue = true;
-  characterName = "";
-  document.querySelector('.line-display').textContent = "Click to Start";
-}
+    function startRehearsal() {
+      characterName = characterSelect.value;
+      selectedVoice = speechSynthesis.getVoices().find(voice => voice.name === voiceSelect.value);
 
-function toggleDarkMode() {
-  document.body.classList.toggle('dark');
-}
-</script>
+      userLines = lines
+        .map((entry, index) => ({ ...entry, index }))
+        .filter(entry => entry.character === characterName)
+        .map(entry => {
+          const cueIndex = entry.index > 0 ? entry.index - 1 : null;
+          return {
+            cue: cueIndex !== null ? lines[cueIndex].line : "(start)",
+            line: entry.line
+          };
+        });
+
+      currentIndex = 0;
+      showingCue = true;
+      document.querySelector('.line-display').textContent = "Click to Start";
+    }
+
+    function speak(text) {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+      utterance.rate = 1.1;
+      speechSynthesis.speak(utterance);
+    }
+
+    function showNextLine() {
+      if (!userLines.length) {
+        startRehearsal();
+        return;
+      }
+
+      if (currentIndex >= userLines.length) {
+        document.querySelector('.line-display').textContent = "🎉 Done!";
+        return;
+      }
+
+      const display = document.querySelector('.line-display');
+
+      if (showingCue) {
+        display.textContent = userLines[currentIndex].cue;
+        speak(userLines[currentIndex].cue);
+        showingCue = false;
+      } else {
+        display.textContent = userLines[currentIndex].line;
+        showingCue = true;
+        currentIndex++;
+      }
+    }
+
+    function resetRehearsal() {
+      userLines = [];
+      currentIndex = 0;
+      showingCue = true;
+      characterName = "";
+      document.querySelector('.line-display').textContent = "Click to Start";
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    function pauseSpeech() {
+      if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+      }
+    }
+
+    function resumeSpeech() {
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+      }
+    }
+
+    function skipCue() {
+      if (!userLines.length) return;
+
+      if (!showingCue) {
+        // Skip to next cue
+        currentIndex++;
+        if (currentIndex >= userLines.length) {
+          document.querySelector('.line-display').textContent = "🎉 Done!";
+          return;
+        }
+      }
+      showNextLine();
+    }
+
+    // Initialize character list on page load
+    window.onload = () => {
+      populateCharacterList();
+      populateVoiceList();
+    };
+  </script>
 
 </body>
 </html>
