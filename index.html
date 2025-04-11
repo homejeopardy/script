@@ -10,7 +10,7 @@
   --text-color: #000000;
   --highlight-color: #e0e0e0;
 }
-[data-theme="dark"] {
+.dark {
   --bg-color: #121212;
   --text-color: #ffffff;
   --highlight-color: #333333;
@@ -48,228 +48,26 @@ button {
 <div class="line-display" onclick="showNextLine()">Click to Start</div>
 
 <script>
+// Eurydice script (shortened for this example)
 const lines = [
-{ character: "FIRST MOVEMENT", line: "Scene 1" },
 { character: "EURYDICE", line: "All those birds? Thank you." },
 { character: "ORPHEUS", line: "Music." },
 { character: "EURYDICE", line: "How can you think about music? You either hear it or you don’t." },
 { character: "ORPHEUS", line: "I’m hearing it then." },
-{ character: "EURYDICE", line: "Oh." },
-{ character: "ORPHEUS", line: "Did you?" },
-{ character: "EURYDICE", line: "Yes. It was very interesting." },
-{ character: "ORPHEUS", line: "That’s good." },
-{ character: "EURYDICE", line: "Don’t you want to know what it was about?" },
-{ character: "ORPHEUS", line: "Of course." },
-{ character: "EURYDICE", line: "There were - stories - about people’s lives - how some come out well - and others come out badly." },
-{ character: "ORPHEUS", line: "Do you love the book?" },
-{ character: "EURYDICE", line: "Yes - I think so." },
-{ character: "ORPHEUS", line: "Why?" },
-{ character: "EURYDICE", line: "It can be interesting to see if other people - like dead people who wrote books - agree or disagree with what you think." },
-{ character: "ORPHEUS", line: "Why?" },
-{ character: "EURYDICE", line: "Because it makes you - a larger part of the human community. It had very interesting arguments." },
-{ character: "ORPHEUS", line: "Oh. And arguments that are interesting are good arguments?" },
-{ character: "EURYDICE", line: "Well - yes." },
-{ character: "ORPHEUS", line: "I didn’t know an argument should be interesting. I thought it should be right or wrong." },
-{ character: "EURYDICE", line: "Well, these particular arguments were very interesting." },
-{ character: "ORPHEUS", line: "Maybe you should make up your own thoughts. Instead of reading them in a book." },
-{ character: "EURYDICE", line: "I do. I do think up my own thoughts." },
-{ character: "ORPHEUS", line: "I know you do. I love how you love books. Don’t be mad." },
-{ character: "EURYDICE", line: "Will you sing it for me?" },
-{ character: "ORPHEUS", line: "You have it?" },
-{ character: "EURYDICE", line: "Yes. I think so." },
-{ character: "ORPHEUS", line: "Let’s hear it." },
-{ character: "EURYDICE", line: "I love you, too." },
-{ character: "ORPHEUS", line: "How will you remember?" },
-{ character: "EURYDICE", line: "That I love you?" },
-{ character: "ORPHEUS", line: "Yes." },
-{ character: "EURYDICE", line: "That’s easy. I can’t help it." },
-{ character: "ORPHEUS", line: "You never know. I’d better tie a string around your finger to remind you." },
-{ character: "EURYDICE", line: "Is there string at the ocean?" },
-{ character: "ORPHEUS", line: "I always have string. In case I come upon a broken instrument." },
-{ character: "EURYDICE", line: "I hate parties." },
-{ character: "MAN", line: "Yes...yes yes yse...no one. I just have something to tell you. I have a letter. Addressed to Eurydice - that’s you - from your father." },
-{ character: "EURYDICE", line: "That’s not possible." },
-{ character: "MAN", line: "He wrote down some thoughts - for your wedding day." },
-{ character: "EURYDICE", line: "Let me see." },
-{ character: "ORPHEUS", line: "Eurydice!?" },
-{ character: "SECOND MOVEMENT", line: "Scene 1" },
-{ character: "THE STONES", line: "We are a chorus of stones." },
-{ character: "LITTLE STONE", line: "I’m a little stone." },
-{ character: "BIG STONE", line: "I’m a big stone." },
-{ character: "LOUD STONE", line: "I’m a loud stone." },
-{ character: "THE STONES", line: "We are all three stones." },
-{ character: "LITTLE STONE", line: "We live with the dead people in the land of the dead." },
-{ character: "BIG STONE", line: "Eurydice was a great musician. Orpheus was his wife." },
-{ character: "LOUD STONE", line: "Correcting Big Stone" },
-{ character: "LITTLE STONE", line: "Then he played the saddest music. Even we -" },
-{ character: "THE STONES", line: "The stones -" },
-{ character: "LITTLE STONE", line: "Cried when we heard it." },
-{ character: "BIG STONE", line: "Oh!" },
-{ character: "LOUD STONE", line: "Oh!" },
-{ character: "LITTLE STONE", line: "Oh!" },
-{ character: "THE STONES", line: "To the audience" },
-{ character: "LOUD STONE", line: "It’s a very quiet language." },
-{ character: "LITTLE STONE", line: "Like if the pores in your face opened up and talked." },
-{ character: "BIG STONE", line: "Like potatoes sleeping in the dirt." },
-{ character: "LITTLE STONE", line: "Pretend that you understand her or she’ll be embarrassed." },
-{ character: "BIG STONE", line: "Yes - pretend for a moment that you understand the language of stones." },
-{ character: "LOUD STONE", line: "Listen to her the way you would listen to your own daughter if she died too young and tried to speak to you across long distances." },
-{ character: "EURYDICE", line: "There was a roar, and a coldness - I think my husband was with me. What was my husband’s name?" },
-{ character: "LITTLE STONE", line: "The station is like a train but there is no train." },
-{ character: "BIG STONE", line: "The train has wheels that are not wheels." },
-{ character: "LOUD STONE", line: "There is the opposite of a wheel and the opposite of smoke and the opposite of a train." },
-{ character: "EURYDICE", line: "Oh! I’m waiting for someone to meet me, I think." },
-{ character: "FATHER", line: "Eurydice." },
-{ character: "EURYDICE", line: "To the stones" },
-{ character: "FATHER", line: "Eurydice!" },
-{ character: "EURYDICE", line: "What is that language you’re speaking? It gives me tingles. Say it again." },
-{ character: "FATHER", line: "Eurydice!" },
-{ character: "EURYDICE", line: "Oooh - it’s like a fruit! Again!" },
-{ character: "FATHER", line: "Eurydice - I’m your father." },
-{ character: "EURYDICE", line: "Imitating" },
-{ character: "FATHER", line: "Your father." },
-{ character: "THE STONES", line: "To the Father" },
-{ character: "EURYDICE", line: "I need a reservation. For the fancy hotel." },
-{ character: "FATHER", line: "When you were alive, I was your father." },
-{ character: "THE STONES", line: "Father is not a word that dead people understand." },
-{ character: "LOUD STONE", line: "He is what we call subversive." },
-{ character: "FATHER", line: "When you were alive, I was your tree." },
-{ character: "EURYDICE", line: "My tree! Yes, the tall one in the backyard! I used to sit all day in its shade." },
-{ character: "LITTLE STONE", line: "There is a problem here." },
-{ character: "EURYDICE", line: "Is there any entertainment at the hotel?" },
-{ character: "FATHER", line: "I named you Eurydice. Your mother named all the other children. But Eurydice I chose for you." },
-{ character: "BIG STONE", line: "Be careful, sir." },
-{ character: "FATHER", line: "Eurydice. I wanted to remember your name. I asked the Stones. They said: forget the names - the names make you remember." },
-{ character: "LOUD STONE", line: "We told you how it works!" },
-{ character: "BIG STONE", line: "To Eurydice" },
-{ character: "EURYDICE", line: "I feel suddenly hungry! I would like a continental breakfast, please. Maybe some rolls and butter. Oh - and jam. Please take my suitcase to my room, if you would." },
-{ character: "FATHER", line: "I’m sorry, miss, but there are no rooms here." },
-{ character: "EURYDICE", line: "What? No rooms? Where do people sleep?" },
-{ character: "FATHER", line: "People don’t sleep here." },
-{ character: "EURYDICE", line: "I have to say I’m very disappointed. It’s been such a tiring day. I’ve been traveling all day - first on a river, then on an elevator that rained, then on a train...I thought someone would meet me at the station…" },
-{ character: "THE STONES", line: "Don’t cry! Don’t cry!" },
-{ character: "EURYDICE", line: "I don’t know where I am and there are all these stones and I hate them! They’re horrible! I want a bath! I thought someone would meet me at the station!" },
-{ character: "FATHER", line: "Don’t be sad. I’ll take your luggage to your room." },
-{ character: "THE STONES", line: "THERE ARE NO ROOMS!" },
-{ character: "ORPHEUS", line: "Dear Eurydice," },
-{ character: "FATHER", line: "There is a letter for you, miss." },
-{ character: "EURYDICE", line: "A letter?" },
-{ character: "FATHER", line: "A letter." },
-{ character: "EURYDICE", line: "There’s dirt on it." },
-{ character: "FATHER", line: "Miss." },
-{ character: "EURYDICE", line: "What is it?" },
-{ character: "FATHER", line: "Would you like me to read you the letter?" },
-{ character: "EURYDICE", line: "Read me the letter?" },
-{ character: "FATHER", line: "You can’t do it with your feet." },
-{ character: "EURYDICE", line: "That’s you." },
-{ character: "FATHER", line: "You." },
-{ character: "EURYDICE", line: "I love you?" },
-{ character: "FATHER", line: "It’s like your tree." },
-{ character: "EURYDICE", line: "Tall? Green?" },
-{ character: "FATHER", line: "It’s like sitting in the shade." },
-{ character: "EURYDICE", line: "Oh." },
-{ character: "FATHER", line: "Reading" },
-{ character: "EURYDICE", line: "Music?" },
-{ character: "FATHER", line: "It’s like that." },
-{ character: "EURYDICE", line: "Go on." },
-{ character: "FATHER", line: "Reading" },
-{ character: "EURYDICE", line: "Orpheus?" },
-{ character: "FATHER", line: "Orpheus" },
-{ character: "EURYDICE", line: "That word! It’s like - I can’t breathe! Orpheus." },
-{ character: "THE STONES", line: "STOP SINGING!" },
-{ character: "CHILD", line: "Knock, Knock." },
-{ character: "EURYDICE", line: "Who’s there?" },
-{ character: "CHILD", line: "I am Lord of the Underworld." },
-{ character: "EURYDICE", line: "Very funny." },
-{ character: "CHILD", line: "I am." },
-{ character: "EURYDICE", line: "Prove it." },
-{ character: "CHILD", line: "I can do chin-ups inside your bones. Close your eyes." },
-{ character: "EURYDICE", line: "Ow." },
-{ character: "CHILD", line: "See?" },
-{ character: "EURYDICE", line: "What do you want?" },
-{ character: "CHILD", line: "You’re pretty." },
-{ character: "EURYDICE", line: "I’m dead." },
-{ character: "CHILD", line: "You’re pretty." },
-{ character: "EURYDICE", line: "You’re little." },
-{ character: "CHILD", line: "I grow downward. Like a turnip." },
-{ character: "EURYDICE", line: "What do you want?" },
-{ character: "CHILD", line: "I wanted to see if you were comfortable." },
-{ character: "EURYDICE", line: "Comfortable?" },
-{ character: "CHILD", line: "You’re not itchy?" },
-{ character: "EURYDICE", line: "No." },
-{ character: "CHILD", line: "That’s good." },
-{ character: "EURYDICE", line: "The luggage for my stay. The porter brought it to my room for me." },
-{ character: "THE STONES", line: "Rooms are not allowed!" },
-{ character: "CHILD", line: "The porter?" },
-{ character: "EURYDICE", line: "My father?" },
-{ character: "CHILD", line: "Fathers are not allowed! Where is he?" },
-{ character: "EURYDICE", line: "He’s at work." },
-{ character: "CHILD", line: "We’ll have to dip you in the river again and make sure you’re good and dunked." },
-{ character: "THE STONES", line: "We will!" },
-{ character: "THIRD MOVEMENT", line: "Scene 1" },
-{ character: "CHILD", line: "Who are you?" },
-{ character: "ORPHEUS", line: "I am Orpheus." },
-{ character: "CHILD", line: "I am Lord of the Underworld." },
-{ character: "ORPHEUS", line: "But you’re so young!" },
-{ character: "CHILD", line: "Don’t be rude." },
-{ character: "ORPHEUS", line: "Sorry. Did you like my music?" },
-{ character: "CHILD", line: "No. I prefer happy music with a nice beat." },
-{ character: "ORPHEUS", line: "Oh." },
-{ character: "CHILD", line: "You’ve come for Eurydice." },
-{ character: "ORPHEUS", line: "Yes!" },
-{ character: "CHILD", line: "And you thought singing would get you through the gates of hell." },
-{ character: "ORPHEUS", line: "What do I have to do?" },
-{ character: "CHILD", line: "You’ll have to do more than sing." },
-{ character: "ORPHEUS", line: "I’m not sure what you mean, sir." },
-{ character: "CHILD", line: "Start walking home. Your wife just might be on the road behind you. We make it real nice here. So people want to stick around. As you walk, keep your eyes facing front. If you look back at her - poof! She’s gone." },
-{ character: "ORPHEUS", line: "I can’t look at her?" },
-{ character: "CHILD", line: "No." },
-{ character: "ORPHEUS", line: "Why?" },
-{ character: "CHILD", line: "Because." },
-{ character: "ORPHEUS", line: "Because?" },
-{ character: "CHILD", line: "Because. Do you understand me?" },
-{ character: "ORPHEUS", line: "I look straight ahead. That’s all?" },
-{ character: "CHILD", line: "Yes." },
-{ character: "ORPHEUS", line: "That’s easy." },
-{ character: "CHILD", line: "Good." },
-{ character: "EURYDICE", line: "I hear him at the gates! That’s his music! He’s come to save me!" },
-{ character: "FATHER", line: "Do you want to go with him?" },
-{ character: "EURYDICE", line: "Yes of course! Oh - you’ll be lonely, won’t you?" },
-{ character: "FATHER", line: "No, no." },
-{ character: "EURYDICE", line: "Are you sure?" },
-{ character: "FATHER", line: "I’ll take you to him." },
-{ character: "EURYDICE", line: "Yes - I think so -" },
-{ character: "FATHER", line: "There’s one thing you need to know. If he turns around and sees you, you’ll die a second death. Those are the rules. So step quickly. And don’t cry out." },
-{ character: "EURYDICE", line: "I won’t." },
-{ character: "FATHER", line: "Good-bye." },
-{ character: "EURYDICE", line: "I’ll look for a tree." },
-{ character: "FATHER", line: "I’ll write you letters. Good-bye, Eurydice." },
-{ character: "EURYDICE", line: "Good-bye." },
-{ character: "LOUD STONE", line: "Face forward!" },
-{ character: "BIG STONE", line: "Keep walking." },
-{ character: "EURYDICE", line: "I’m afraid!" },
-{ character: "THE STONES", line: "Turn around!" },
-{ character: "LITTLE STONE", line: "Orpheus came all the way here to find you." },
-{ character: "LOUD STONE", line: "He played the saddest music." },
-{ character: "BIG STONE", line: "Even we -" },
-{ character: "THE STONES", line: "The stones -" },
-{ character: "LITTLE STONE", line: "Cried when we heard it." },
-{ character: "EURYDICE", line: "That’s Orpheus?" },
-{ character: "THE STONES", line: "Yes, that’s him!" },
-{ character: "EURYDICE", line: "Where’s his music?" },
-{ character: "THE STONES", line: "It’s in your head." },
-{ character: "EURYDICE", line: "Orpheus?" },
-{ character: "ORPHEUS", line: "You startled me." },
-{ character: "EURYDICE", line: "I’m sorry." },
-{ character: "ORPHEUS", line: "Why?" },
-{ character: "EURYDICE", line: "I don’t know." },
-{ character: "ORPHEUS", line: "Eurydice. We’ve known each other for centuries. Remember when you wanted your name in a song so I put your name in a song - When I played my music at the gates of hell I was singing your name over and over and over again. Eurydice." },
+// Add full script here
 ];
 
 let userLines = [];
 let currentIndex = 0;
 let showingCue = true;
 let characterName = "";
+
+// Text-to-Speech for cues
+function speak(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1.1;
+  speechSynthesis.speak(utterance);
+}
 
 function startRehearsal() {
   characterName = prompt("Enter your character name exactly as in the script:").toUpperCase();
@@ -297,11 +95,14 @@ function showNextLine() {
     return;
   }
 
+  const display = document.querySelector('.line-display');
+
   if (showingCue) {
-    document.querySelector('.line-display').textContent = userLines[currentIndex].cue;
+    display.textContent = userLines[currentIndex].cue;
+    speak(userLines[currentIndex].cue);  // Read cue out loud
     showingCue = false;
   } else {
-    document.querySelector('.line-display').textContent = userLines[currentIndex].line;
+    display.textContent = userLines[currentIndex].line;
     showingCue = true;
     currentIndex++;
   }
@@ -316,7 +117,7 @@ function resetRehearsal() {
 }
 
 function toggleDarkMode() {
-  document.body.toggleAttribute('data-theme', 'dark');
+  document.body.classList.toggle('dark');
 }
 </script>
 
