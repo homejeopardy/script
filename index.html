@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Line Rehearsal Tool</title>
+<title>Ultimate Line Rehearsal Tool - Eurydice Edition</title>
 <style>
 :root {
   --bg-color: #ffffff;
@@ -29,6 +29,7 @@ body {
   border-radius: 8px;
   margin: 20px 0;
   cursor: pointer;
+  white-space: pre-wrap;
 }
 button {
   padding: 10px 20px;
@@ -41,57 +42,52 @@ button {
 
 <h1>Ultimate Line Rehearsal Tool</h1>
 
-<input type="file" id="fileInput"><br>
 <button onclick="resetRehearsal()">Reset Rehearsal</button>
 <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
 <div class="line-display" onclick="showNextLine()">Click to Start</div>
 
 <script>
-let lines = [];
+const lines = [
+{ character: "EURYDICE", line: "All those birds? Thank you." },
+{ character: "EURYDICE", line: "And - the sea! For me?" },
+{ character: "EURYDICE", line: "Wow." },
+{ character: "EURYDICE", line: "Surely not - surely not the sky and the stars too?!" },
+{ character: "EURYDICE", line: "That’s very generous." },
+{ character: "EURYDICE", line: "Perhaps too generous?" },
+// ... (All lines from the entire Eurydice script go here) ...
+];
+
 let userLines = [];
 let currentIndex = 0;
 let showingCue = true;
 let characterName = "";
 
-document.getElementById('fileInput').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    processScript(event.target.result);
-  };
-  reader.readAsText(file);
-});
-
-function processScript(text) {
-  const rawLines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
-  lines = [];
-
-  // Automatically process the script text into lines based on character names
-  for (let i = 0; i < rawLines.length - 1; i++) {
-    if (rawLines[i] === rawLines[i].toUpperCase()) {
-      lines.push({ character: rawLines[i], line: rawLines[i + 1] });
-    }
-  }
-
-  // Prompt for character name and filter user-specific lines
+function startRehearsal() {
   characterName = prompt("Enter your character name exactly as in the script:").toUpperCase();
-  userLines = lines.filter((entry) => entry.character === characterName)
-                   .map((entry, index, arr) => {
-                     const cueIndex = lines.findIndex(l => l === entry);
+  userLines = lines.filter(entry => entry.character === characterName)
+                   .map(entry => {
+                     const cueIndex = lines.indexOf(entry);
                      return {
                        cue: cueIndex > 0 ? lines[cueIndex - 1].line : "(start)",
                        line: entry.line
                      };
                    });
-
   currentIndex = 0;
   showingCue = true;
   document.querySelector('.line-display').textContent = "Click to Start";
 }
 
 function showNextLine() {
-  if (!userLines.length) return;
+  if (!userLines.length) {
+    startRehearsal();
+    return;
+  }
+
+  if (currentIndex >= userLines.length) {
+    document.querySelector('.line-display').textContent = "🎉 Done!";
+    return;
+  }
 
   if (showingCue) {
     document.querySelector('.line-display').textContent = userLines[currentIndex].cue;
@@ -100,19 +96,14 @@ function showNextLine() {
     document.querySelector('.line-display').textContent = userLines[currentIndex].line;
     showingCue = true;
     currentIndex++;
-    if (currentIndex >= userLines.length) {
-      document.querySelector('.line-display').textContent = "🎉 Done!";
-    }
   }
 }
 
 function resetRehearsal() {
-  lines = [];
   userLines = [];
   currentIndex = 0;
   showingCue = true;
   characterName = "";
-  document.getElementById('fileInput').value = "";
   document.querySelector('.line-display').textContent = "Click to Start";
 }
 
